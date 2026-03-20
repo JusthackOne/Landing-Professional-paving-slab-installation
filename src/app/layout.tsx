@@ -1,5 +1,6 @@
-﻿import './globals.scss'
+import './globals.scss'
 
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" suppressHydrationWarning>
       <body className={`${inter.className} bg-background text-foreground`} suppressHydrationWarning>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   )
