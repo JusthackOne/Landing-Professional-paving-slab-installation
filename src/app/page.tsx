@@ -1,8 +1,11 @@
 ﻿'use client'
 
 import {
+  ArrowRight,
   CheckCircle2,
+  Clock3,
   Hammer,
+  MapPin,
   Maximize2,
   Menu,
   MessageCircleMore,
@@ -22,6 +25,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { workImages } from '@/data/work-images'
 
 const advantages = [
   {
@@ -120,39 +124,17 @@ const pricingItems = [
   },
 ]
 
-const workImages = [
-  { src: '/images/works/1.jpg', width: 576, height: 1280 },
-  { src: '/images/works/2.jpg', width: 960, height: 1280 },
-  { src: '/images/works/3.jpg', width: 960, height: 1280 },
-  { src: '/images/works/4.jpg', width: 750, height: 1000 },
-  { src: '/images/works/5.jpg', width: 1036, height: 1034 },
-  { src: '/images/works/6.jpg', width: 1067, height: 807 },
-  { src: '/images/works/7.jpg', width: 965, height: 1280 },
-  { src: '/images/works/8.jpg', width: 970, height: 1280 },
-  { src: '/images/works/9.jpg', width: 960, height: 1280 },
-  { src: '/images/works/10.jpg', width: 960, height: 1280 },
-  { src: '/images/works/11.jpg', width: 719, height: 1280 },
-  { src: '/images/works/12.jpg', width: 960, height: 1280 },
-  { src: '/images/works/13.jpg', width: 720, height: 1280 },
-  { src: '/images/works/14.jpg', width: 960, height: 1280 },
-  { src: '/images/works/15.jpg', width: 745, height: 1280 },
-  { src: '/images/works/16.jpg', width: 720, height: 1280 },
-  { src: '/images/works/17.jpg', width: 959, height: 1280 },
-  { src: '/images/works/18.jpg', width: 756, height: 1008 },
-  { src: '/images/works/19.jpg', width: 966, height: 1280 },
-  { src: '/images/works/20.jpg', width: 972, height: 1280 },
-  { src: '/images/works/21.jpg', width: 1079, height: 863 },
-  { src: '/images/works/22.jpg', width: 1042, height: 807 },
-  { src: '/images/works/23.jpg', width: 1080, height: 808 },
-  { src: '/images/works/24.jpg', width: 1008, height: 756 },
-  { src: '/images/works/25.jpg', width: 757, height: 1280 },
-  { src: '/images/works/26.jpg', width: 1032, height: 774 },
-  { src: '/images/works/27.jpg', width: 768, height: 1024 },
-  { src: '/images/works/28.jpg', width: 960, height: 1280 },
-  { src: '/images/works/29.jpg', width: 750, height: 1000 },
-]
-
 const heroVideos = ['/videos/main/1.mp4', '/videos/main/2.mp4', '/videos/main/3.mp4']
+
+const navSections = [
+  { href: '#hero', label: 'Главная' },
+  { href: '#pricing', label: 'Цены' },
+  { href: '#works', label: 'Примеры работ' },
+  { href: '#advantages', label: 'Почему нас выбирают' },
+  { href: '#process', label: 'Как проходит работа' },
+  { href: '#lead-form', label: 'Оставить заявку' },
+  { href: '#faq', label: 'FAQ' },
+]
 
 export default function HomePage() {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
@@ -177,11 +159,7 @@ export default function HomePage() {
     price: string
     image: string
   } | null>(null)
-  const [selectedWorkImage, setSelectedWorkImage] = useState<{
-    src: string
-    width: number
-    height: number
-  } | null>(null)
+  const [selectedWorkImage, setSelectedWorkImage] = useState<{ src: string } | null>(null)
   const heroVideoRef = useRef<HTMLVideoElement | null>(null)
 
   const videoProgress = useMemo(() => {
@@ -196,6 +174,25 @@ export default function HomePage() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isMobileMenuOpen])
 
   useEffect(() => {
     if (!selectedWorkImage && !selectedPricingItem) return
@@ -216,6 +213,29 @@ export default function HomePage() {
       setCallFormStatus({ type: 'idle', message: '' })
     }
   }, [isCallModalOpen])
+
+  useEffect(() => {
+    const popupImageSources = [
+      ...workImages.map((image) => image.src),
+      ...pricingItems.map((item) => item.image),
+    ]
+    const uniquePopupImageSources = Array.from(new Set(popupImageSources))
+
+    const preloadImages = () => {
+      uniquePopupImageSources.forEach((src) => {
+        const preloadedImage = new window.Image()
+        preloadedImage.src = src
+      })
+    }
+
+    if ('requestIdleCallback' in window) {
+      const idleCallbackId = window.requestIdleCallback(() => preloadImages())
+      return () => window.cancelIdleCallback(idleCallbackId)
+    }
+
+    const timeoutId = setTimeout(preloadImages, 200)
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   useEffect(() => {
     const video = heroVideoRef.current
@@ -314,10 +334,11 @@ export default function HomePage() {
   return (
     <main className="min-h-screen">
       <section
+        id="hero"
         className="relative overflow-hidden border-b"
         style={{
           backgroundImage:
-            "linear-gradient(110deg, rgba(13,54,28,0.82), rgba(23,91,44,0.68)), url('/images/bg/mainSection.jpg')",
+            "linear-gradient(110deg, rgba(13,54,28,0.5), rgba(23,91,44,0.3)), url('/images/bg/mainSection2.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -330,15 +351,6 @@ export default function HomePage() {
               }`}
             >
               <div className="flex items-center justify-between md:hidden">
-                <button
-                  aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-primary/20 bg-white text-primary"
-                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                  type="button"
-                >
-                  {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </button>
-
                 <div className="flex items-center justify-center rounded-full border-2 border-white bg-white px-4 py-2 shadow-md">
                   <Image
                     alt="Логотип ARTIS"
@@ -349,50 +361,18 @@ export default function HomePage() {
                     width={180}
                   />
                 </div>
-              </div>
 
-              {isMobileMenuOpen ? (
-                <div className="mt-3 grid gap-3 rounded-xl border border-primary/15 bg-white p-3 md:hidden">
-                  <a
-                    className="inline-flex items-center gap-2 text-sm font-medium text-foreground"
-                    href="tel:+79999999999"
-                  >
-                    <Phone className="h-4 w-4 text-primary" />
-                    +7 (999) 999-99-99
-                  </a>
-                  <div className="flex items-center gap-3">
-                    <a
-                      aria-label="WhatsApp"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white"
-                      href="/"
-                    >
-                      <MessageCircleMore className="h-4 w-4" />
-                    </a>
-                    <a
-                      aria-label="Telegram"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#24A1DE] text-white"
-                      href="/"
-                    >
-                      <Image
-                        alt="Telegram"
-                        height={16}
-                        src="/images/logos/Telegram.svg"
-                        width={16}
-                      />
-                    </a>
-                  </div>
-                  <button
-                    className={buttonVariants({ size: 'sm' })}
-                    onClick={() => {
-                      openCallModal()
-                      setIsMobileMenuOpen(false)
-                    }}
-                    type="button"
-                  >
-                    Заказать звонок
-                  </button>
-                </div>
-              ) : null}
+                <button
+                  aria-controls="mobile-navigation"
+                  aria-expanded={isMobileMenuOpen}
+                  aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-primary/20 bg-white text-primary"
+                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                  type="button"
+                >
+                  {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </button>
+              </div>
 
               <div className="hidden grid-cols-1 items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr]">
                 <div className="text-center md:text-left">
@@ -454,33 +434,150 @@ export default function HomePage() {
           </div>
         </header>
 
-        <div className="container-shell relative py-16 pt-32 sm:py-20 sm:pt-36">
-          <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            <div>
-              <p className="mb-5 inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-white/90">
-                АРТИС
+        <div
+          className={`fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 md:hidden ${
+            isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <aside
+            className={`absolute h-full overflow-y-auto inset-y-0 right-0 flex w-full max-w-[320px] flex-col border-l border-primary/10 bg-white px-5 pb-6 pt-5 shadow-2xl transition-transform duration-300 ${
+              isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
+            id="mobile-navigation"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-primary/10 pb-4">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Навигация</p>
+                <p className="text-xs text-muted-foreground">Разделы и быстрые действия</p>
+              </div>
+              <button
+                aria-label="Закрыть меню"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-primary/20 bg-white text-primary"
+                onClick={() => setIsMobileMenuOpen(false)}
+                type="button"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <nav className="mt-5 grid gap-2">
+              {navSections.map((item) => (
+                <a
+                  className="rounded-xl border border-primary/10 bg-secondary/30 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5"
+                  href={item.href}
+                  key={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+
+            <div className="mt-6 rounded-2xl border border-primary/15 bg-secondary/35 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">
+                Контакты
               </p>
-              <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-6xl">
-                Профессиональная укладка тротуарной плитки
-              </h1>
-              <p className="mt-6 max-w-2xl text-base text-white/85 sm:text-lg">
-                Работаем по Москве и области. Делаем долговечное покрытие с правильным основанием,
-                аккуратной геометрией и четкими сроками.
-              </p>
-              <div className="mt-10 flex flex-wrap gap-3">
-                <a className={buttonVariants({ variant: 'secondary' })} href="tel:+79999999999">
-                  +7 (999) 999-99-99
+              <a
+                className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-foreground"
+                href="tel:+79999999999"
+              >
+                <Phone className="h-4 w-4 text-primary" />
+                +7 (999) 999-99-99
+              </a>
+              <div className="mt-4 flex items-center gap-3">
+                <a
+                  aria-label="WhatsApp"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white"
+                  href="/"
+                >
+                  <MessageCircleMore className="h-4 w-4" />
+                </a>
+                <a
+                  aria-label="Telegram"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#24A1DE] text-white"
+                  href="/"
+                >
+                  <Image alt="Telegram" height={18} src="/images/logos/Telegram.svg" width={18} />
                 </a>
               </div>
-              <div className="mt-8 flex flex-wrap gap-5 text-sm text-white/85">
-                <span className="inline-flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" /> Бесплатный замер
+              <button
+                className={`${buttonVariants({ size: 'sm' })} mt-4 w-full`}
+                onClick={() => {
+                  openCallModal()
+                  setIsMobileMenuOpen(false)
+                }}
+                type="button"
+              >
+                Заказать звонок
+              </button>
+            </div>
+          </aside>
+        </div>
+
+        <div className="container-shell relative py-16 pt-32 sm:py-20 sm:pt-36">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="flex min-w-0 flex-col gap-4">
+              <div className="w-full rounded-3xl border border-primary/10 bg-white p-6 shadow-xl shadow-black/10 sm:p-8 lg:p-10">
+                <p className="inline-flex rounded-full border border-primary/25 bg-primary/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+                  АРТИС | Мощение под ключ
+                </p>
+                <div className="mt-5 max-w-4xl space-y-6">
+                  <h1 className="text-3xl font-semibold leading-[1.12] tracking-tight text-slate-900 sm:text-4xl">
+                    <span className="block md:text-left text-center">
+                      Профессиональная укладка плитки под ключ
+                    </span>
+                  </h1>
+                  <div className="flex flex-col sm:flex-row w-full flex-nowrap items-center gap-3 justify-around">
+                    <p className="whitespace-nowrap text-md font-medium text-slate-700 sm:text-base">
+                      Получите бесплатную <br /> консультацию!
+                    </p>
+                    <Button
+                      className="h-12 whitespace-nowrap rounded-xl px-5 text-base font-semibold shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
+                      onClick={() => openCallModal()}
+                      type="button"
+                    >
+                      Получить консультацию
+                      <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary-foreground/30">
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    </Button>
+                  </div>
+                  <div className="grid max-w-2xl gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl border border-primary/15 bg-primary/5 p-3">
+                      <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                        <Clock3 className="h-4 w-4" />
+                        Сроки
+                      </p>
+                      <p className="mt-1 text-sm text-slate-700">Старт за 1-3 дня после замера</p>
+                    </div>
+                    <div className="rounded-xl border border-primary/15 bg-primary/5 p-3">
+                      <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                        <MapPin className="h-4 w-4" />
+                        География
+                      </p>
+                      <p className="mt-1 text-sm text-slate-700">Москва и Московская область</p>
+                    </div>
+                    <div className="rounded-xl border border-primary/15 bg-primary/5 p-3">
+                      <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                        <ShieldCheck className="h-4 w-4" />
+                        Контроль
+                      </p>
+                      <p className="mt-1 text-sm text-slate-700">Приемка по этапам и фотоотчет</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex w-full sm:justify-start justify-center flex-wrap items-center gap-2 pb-1 text-sm text-slate-700 sm:gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Бесплатный замер
                 </span>
-                <span className="inline-flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" /> Гарантия до 3 лет
+                <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Гарантия до 3 лет
                 </span>
-                <span className="inline-flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" /> Фиксированная смета
+                <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Фиксированная смета
                 </span>
               </div>
             </div>
@@ -550,7 +647,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-shell py-14 sm:py-16">
+      <section className="container-shell py-14 sm:py-16" id="pricing">
         <div className="mb-6">
           <h2 className="text-3xl font-semibold tracking-tight">Цены</h2>
         </div>
@@ -606,36 +703,43 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="py-10" id="works">
         <div className="container-shell mb-4">
           <h2 className="text-3xl font-semibold tracking-tight">Примеры работ</h2>
         </div>
-        <div className="w-full px-2 sm:px-4">
-          <div className="columns-1 gap-2 sm:columns-2 lg:columns-3 xl:columns-4">
-            {workImages.map((image, index) => (
+        <div className="container-shell">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {workImages.slice(0, 4).map((image, index) => (
               <button
-                className="mb-2 block w-full break-inside-avoid overflow-hidden rounded-lg border bg-card text-left"
+                className="block w-full overflow-hidden rounded-lg border bg-card text-left"
                 key={image.src}
                 onClick={() => setSelectedWorkImage(image)}
                 type="button"
               >
-                <Image
+                <img
                   alt={`Пример работы ${index + 1}`}
-                  className="h-auto w-full"
-                  height={image.height}
-                  loading={index < 4 ? 'eager' : 'lazy'}
-                  quality={72}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                  className="h-64 w-full object-cover object-center sm:h-72 lg:h-80"
+                  loading="eager"
                   src={image.src}
-                  width={image.width}
                 />
               </button>
             ))}
           </div>
+          <div className="mt-6 flex justify-center">
+            <Link
+              className={`${buttonVariants({ variant: 'secondary', size: 'lg' })} group gap-2`}
+              href="/portfolio"
+            >
+              Смотреть все работы
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-current/25 transition-transform group-hover:translate-x-0.5">
+                <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden py-16 sm:py-20">
+      <section className="relative overflow-hidden py-16 sm:py-20" id="advantages">
         <div className="pointer-events-none absolute inset-0">
           <div className="why-float absolute -left-10 top-8 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
           <div className="why-float absolute right-4 top-1/3 h-52 w-52 rounded-full bg-emerald-300/20 blur-3xl [animation-delay:1.2s]" />
@@ -709,6 +813,7 @@ export default function HomePage() {
       </section>
 
       <section
+        id="process"
         className="border-y"
         style={{
           backgroundImage:
@@ -857,7 +962,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-shell py-16 sm:py-20">
+      <section className="container-shell py-16 sm:py-20" id="faq">
         <div className="overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-white via-emerald-50/40 to-secondary/55 shadow-lg">
           <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-xl border border-primary/15 bg-white/85 p-5 sm:p-6">
@@ -1081,15 +1186,11 @@ export default function HomePage() {
             >
               <X className="h-4 w-4" />
             </button>
-            <Image
+            <img
               alt="Увеличенный пример работы"
               className="max-h-[92vh] w-full rounded-xl object-contain"
-              height={selectedWorkImage.height}
-              priority
-              quality={85}
-              sizes="100vw"
+              loading="eager"
               src={selectedWorkImage.src}
-              width={selectedWorkImage.width}
             />
           </div>
         </div>
@@ -1116,6 +1217,8 @@ export default function HomePage() {
               alt={selectedPricingItem.service}
               className="h-[320px] w-full object-cover sm:h-[420px]"
               height={420}
+              loading="eager"
+              priority
               src={selectedPricingItem.image}
               width={1200}
             />
