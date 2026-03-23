@@ -136,6 +136,8 @@ const navSections = [
   { href: '#faq', label: 'FAQ' },
 ]
 
+const leadEndpoint = process.env.NEXT_PUBLIC_LEAD_ENDPOINT?.trim() ?? ''
+
 export default function HomePage() {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
   const [callFormService, setCallFormService] = useState('')
@@ -298,13 +300,29 @@ export default function HomePage() {
       setCallFormStatus({ type: 'loading', message: 'Отправляем заявку...' })
     }
 
+    if (!leadEndpoint) {
+      const configError = 'Форма временно недоступна: не настроен NEXT_PUBLIC_LEAD_ENDPOINT.'
+      if (source === 'main') {
+        setLeadFormStatus({ type: 'error', message: configError })
+      } else {
+        setCallFormStatus({ type: 'error', message: configError })
+      }
+      return
+    }
+
     try {
-      const response = await fetch('/api/lead', {
+      const response = await fetch(leadEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      const responsePayload = (await response.json()) as { message?: string }
+      const responseText = await response.text()
+      let responsePayload: { message?: string } = {}
+      try {
+        responsePayload = JSON.parse(responseText) as { message?: string }
+      } catch {
+        responsePayload = {}
+      }
 
       if (!response.ok) {
         throw new Error(responsePayload.message ?? 'Не удалось отправить заявку.')
@@ -695,18 +713,23 @@ export default function HomePage() {
         </div>
         <div className="container-shell">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {workImages.slice(0, 4).map((image, index) => (
+            {[
+              '/images/works/23.jpg',
+              '/images/works/20.jpg',
+              '/images/works/3.jpg',
+              '/images/works/4.jpg',
+            ].map((imageSrc, index) => (
               <button
                 className="block w-full overflow-hidden rounded-lg border bg-card text-left"
-                key={image.src}
-                onClick={() => setSelectedWorkImage(image)}
+                key={imageSrc}
+                onClick={() => setSelectedWorkImage({ src: imageSrc })}
                 type="button"
               >
                 <img
                   alt={`Пример работы ${index + 1}`}
                   className="h-64 w-full object-cover object-center sm:h-72 lg:h-80"
                   loading="eager"
-                  src={image.src}
+                  src={imageSrc}
                 />
               </button>
             ))}
@@ -1001,8 +1024,8 @@ export default function HomePage() {
 
       <footer className="border-t bg-secondary/40">
         <div className="container-shell py-10">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div>
+          <div className="flex md:flex-row flex-col justify-between gap-6 items-center">
+            <div className="flex sm:flex-row flex-col gap-4 items-center justify-center">
               <Image
                 alt="Логотип ARTIS"
                 className="h-12 w-auto"
@@ -1010,27 +1033,21 @@ export default function HomePage() {
                 src="/images/logos/logo.png"
                 width={260}
               />
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Сделаем укладку тротуарной плитки
                 <br />в Москве или МО под ключ
               </p>
-            </div>
 
-            <div className="text-sm text-foreground">
-              <p>ИП Богданов Александр Леонидович</p>
-              <p className="mt-1">ИНН 780418594007</p>
-              <p className="mt-1">ОГРН ИП 323784700334237</p>
-            </div>
-
-            <div className="space-y-2 text-sm text-foreground">
-              <a className="inline-flex items-center gap-2 font-semibold" href="tel:+79671652525">
-                <Phone className="h-4 w-4 text-primary" />
-                +7 (967) 165-25-25
-              </a>
-              <a className="inline-flex items-center gap-2" href="mailto:artis-plitka@yandex.ru">
-                <MessageCircleMore className="h-4 w-4 text-primary" />
-                artis-plitka@yandex.ru
-              </a>
+              <div className="sm:ml-6 ml-0 flex flex-col justify-center sm:items-start items-center space-y-2 text-sm text-foreground">
+                <a className="inline-flex items-center gap-2 font-semibold" href="tel:+79671652525">
+                  <Phone className="h-4 w-4 text-primary" />
+                  +7 (967) 165-25-25
+                </a>{' '}
+                <a className="inline-flex items-center gap-2" href="mailto:artis-plitka@yandex.ru">
+                  <MessageCircleMore className="h-4 w-4 text-primary" />
+                  artis-plitka@yandex.ru
+                </a>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 lg:justify-end">

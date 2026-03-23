@@ -25,6 +25,7 @@ Open `http://localhost:3000`.
 
 - `bun run lint` - lint checks
 - `bun run lint:fix` - auto-fix lint + formatting
+- `bun run build` - static export build (`out/`)
 
 ## Environment
 
@@ -32,8 +33,14 @@ Create `.env.local`:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
-NEXT_PUBLIC_API_BASE_URL=https://api.your-domain.com
+NEXT_PUBLIC_LEAD_ENDPOINT=https://your-lead-endpoint.example.com/webhook
 ```
+
+`NEXT_PUBLIC_LEAD_ENDPOINT` should point to an external form handler (for example, your own endpoint that sends email via Resend).
+
+## Static Deployment
+
+Project is configured with `output: 'export'`. After `bun run build`, upload the `out/` directory to static hosting.
 
 ## Structure
 
