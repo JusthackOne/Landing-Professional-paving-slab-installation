@@ -12,7 +12,7 @@ type LeadPayload = {
   consent?: boolean
 }
 
-const DESTINATION_EMAIL = 'rus.arslanov.85@internet.ru'
+const DESTINATION_EMAIL = 'artis-plitka@yandex.ru'
 
 const escapeHtml = (value: string) =>
   value

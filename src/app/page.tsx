@@ -55,7 +55,7 @@ const steps = [
   'Выезд и бесплатный замер на объекте',
   'Смета и план укладки под ваш бюджет',
   'Подготовка основания и установка бордюра',
-  'Укладка плитки, трамбовка и расшивка швов',
+  'Укладка тротуарной плитки, трамбовка и расшивка швов',
   'Финальная приемка и рекомендации по уходу',
 ]
 
@@ -95,7 +95,7 @@ const pricingItems = [
   {
     service: 'Укладка на почву с полной подготовкой основания (подушка 200 мм)',
     price: 'от 1 500 руб/м2 (площадки), от 1 600 руб/п.м. или м2 (пешеходные зоны)',
-    image: '/images/works/8.jpg',
+    image: '/images/works/30.jpg',
   },
   {
     service: 'Укладка клинкерной брусчатки на готовое монолитное основание на клей',
@@ -105,22 +105,22 @@ const pricingItems = [
   {
     service: 'Укладка натурального камня на готовое бетонное основание',
     price: 'от 2 200 руб/м2',
-    image: '/images/works/24.jpg',
+    image: '/images/works/31.jpg',
   },
   {
     service: 'Укладка полудрагоценного камня в эпоксиде по монолитному основанию',
     price: 'от 24 000 руб/м2 (полный цикл)',
-    image: '/images/works/26.jpg',
+    image: '/images/works/32.jpg',
   },
   {
     service: 'Установка садового бордюрного камня',
     price: 'от 500 руб/п.м.',
-    image: '/images/works/4.jpg',
+    image: '/images/works/33.jpg',
   },
   {
     service: 'Установка дорожного бордюрного камня',
     price: 'от 950 руб/п.м.',
-    image: '/images/works/19.jpg',
+    image: '/images/works/34.jpg',
   },
 ]
 
@@ -376,7 +376,7 @@ export default function HomePage() {
 
               <div className="hidden grid-cols-1 items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr]">
                 <div className="text-center md:text-left">
-                  <p className="text-base font-medium text-foreground">Укладка плитки</p>
+                  <p className="text-base font-medium text-foreground">Укладка тротуарной плитки</p>
                   <p className="text-sm text-muted-foreground">и благоустройство участков</p>
                 </div>
 
@@ -385,24 +385,17 @@ export default function HomePage() {
                 <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
                   <a
                     className="inline-flex items-center gap-2 text-sm font-medium text-foreground"
-                    href="tel:+79999999999"
+                    href="tel:+79671652525"
                   >
                     <Phone className="h-4 w-4 text-primary" />
-                    +7 (999) 999-99-99
+                    +7 (967) 165-25-25
                   </a>
                   <a
                     aria-label="WhatsApp"
                     className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#25D366] text-white"
-                    href="/"
+                    href="https://wa.me/79671652525"
                   >
                     <MessageCircleMore className="h-4 w-4" />
-                  </a>
-                  <a
-                    aria-label="Telegram"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#24A1DE] text-white"
-                    href="/"
-                  >
-                    <Image alt="Telegram" height={16} src="/images/logos/Telegram.svg" width={16} />
                   </a>
                   <button
                     className={buttonVariants({ size: 'sm' })}
@@ -481,25 +474,18 @@ export default function HomePage() {
               </p>
               <a
                 className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-foreground"
-                href="tel:+79999999999"
+                href="tel:+79671652525"
               >
                 <Phone className="h-4 w-4 text-primary" />
-                +7 (999) 999-99-99
+                +7 (967) 165-25-25
               </a>
               <div className="mt-4 flex items-center gap-3">
                 <a
                   aria-label="WhatsApp"
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white"
-                  href="/"
+                  href="https://wa.me/79671652525"
                 >
                   <MessageCircleMore className="h-4 w-4" />
-                </a>
-                <a
-                  aria-label="Telegram"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#24A1DE] text-white"
-                  href="/"
-                >
-                  <Image alt="Telegram" height={18} src="/images/logos/Telegram.svg" width={18} />
                 </a>
               </div>
               <button
@@ -526,7 +512,7 @@ export default function HomePage() {
                 <div className="mt-5 max-w-4xl space-y-6">
                   <h1 className="text-3xl font-semibold leading-[1.12] tracking-tight text-slate-900 sm:text-4xl">
                     <span className="block md:text-left text-center">
-                      Профессиональная укладка плитки под ключ
+                      Профессиональная укладка тротуарной плитки под ключ
                     </span>
                   </h1>
                   <div className="flex flex-col sm:flex-row w-full flex-nowrap items-center gap-3 justify-around">
@@ -659,7 +645,7 @@ export default function HomePage() {
                 <div
                   className="h-44 w-full bg-cover bg-center sm:h-52"
                   style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15, 54, 27, 0.2), rgba(15, 54, 27, 0.45)), url('${item.image}')`,
+                    backgroundImage: `url('${item.image}')`,
                   }}
                 />
                 <button
@@ -1025,7 +1011,7 @@ export default function HomePage() {
                 width={260}
               />
               <p className="mt-2 text-sm text-muted-foreground">
-                Сделаем укладку плитки
+                Сделаем укладку тротуарной плитки
                 <br />в Москве или МО под ключ
               </p>
             </div>
@@ -1037,13 +1023,13 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-2 text-sm text-foreground">
-              <a className="inline-flex items-center gap-2 font-semibold" href="tel:+78124437373">
+              <a className="inline-flex items-center gap-2 font-semibold" href="tel:+79671652525">
                 <Phone className="h-4 w-4 text-primary" />
-                +7 (812) 443-73-73
+                +7 (967) 165-25-25
               </a>
-              <a className="inline-flex items-center gap-2" href="mailto:artis-master@yandex.ru">
+              <a className="inline-flex items-center gap-2" href="mailto:artis-plitka@yandex.ru">
                 <MessageCircleMore className="h-4 w-4 text-primary" />
-                artis-master@yandex.ru
+                artis-plitka@yandex.ru
               </a>
             </div>
 
@@ -1051,16 +1037,9 @@ export default function HomePage() {
               <a
                 aria-label="WhatsApp"
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] text-white"
-                href="/"
+                href="https://wa.me/79671652525"
               >
                 <MessageCircleMore className="h-5 w-5" />
-              </a>
-              <a
-                aria-label="Telegram"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#24A1DE] text-white"
-                href="/"
-              >
-                <Image alt="Telegram" height={20} src="/images/logos/Telegram.svg" width={20} />
               </a>
               <button
                 className={buttonVariants({ size: 'sm' })}

@@ -105,8 +105,8 @@ export default function PrivacyPolicyPage() {
           <p className="mt-2">ИП Богданов Александр Леонидович</p>
           <p>ИНН 780418594007</p>
           <p>ОГРН ИП 323784700334237</p>
-          <p>Email: artis-master@yandex.ru</p>
-          <p>Телефон: +7 (812) 443-73-73</p>
+          <p>Email: artis-plitka@yandex.ru</p>
+          <p>Телефон: +7 (967) 165-25-25</p>
         </section>
       </div>
 
