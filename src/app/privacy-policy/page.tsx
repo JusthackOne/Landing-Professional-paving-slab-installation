@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Политика конфиденциальности',
-  description: 'Политика конфиденциальности и правила обработки персональных данных сайта АРТИС.',
+  description: 'Политика конфиденциальности и правила обработки персональных данных сайта ARTIS.',
 }
 
 export default function PrivacyPolicyPage() {

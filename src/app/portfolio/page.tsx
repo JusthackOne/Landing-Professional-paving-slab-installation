@@ -1,8 +1,15 @@
 import { ArrowLeft } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { buttonVariants } from '@/components/ui/button'
 import { workImages } from '@/data/work-images'
+
+export const metadata: Metadata = {
+  title: 'Портфолио работ',
+  description:
+    'Портфолио работ по укладке тротуарной плитки, брусчатки и благоустройству участков ARTIS.',
+}
 
 export default function PortfolioPage() {
   return (

@@ -638,7 +638,8 @@ export default function HomePage() {
                   <CheckCircle2 className="h-4 w-4 text-primary" /> Бесплатный замер
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" /> Гарантия</span>
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Гарантия
+                </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" /> Фиксированная смета
                 </span>
