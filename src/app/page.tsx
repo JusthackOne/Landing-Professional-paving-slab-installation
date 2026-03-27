@@ -136,7 +136,18 @@ const navSections = [
   { href: '#faq', label: 'FAQ' },
 ]
 
-const leadEndpoint = process.env.NEXT_PUBLIC_LEAD_ENDPOINT?.trim() ?? ''
+const resendApiEndpoint = 'https://api.resend.com/emails'
+const resendApiKey = process.env.NEXT_PUBLIC_RESEND_API_KEY?.trim() ?? ''
+const leadToEmail = process.env.NEXT_PUBLIC_LEAD_TO_EMAIL?.trim() ?? ''
+const resendFromEmail = process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL?.trim() ?? 'onboarding@resend.dev'
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 
 export default function HomePage() {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
@@ -300,8 +311,9 @@ export default function HomePage() {
       setCallFormStatus({ type: 'loading', message: 'Отправляем заявку...' })
     }
 
-    if (!leadEndpoint) {
-      const configError = 'Форма временно недоступна: не настроен NEXT_PUBLIC_LEAD_ENDPOINT.'
+    if (!resendApiKey || !leadToEmail) {
+      const configError =
+        'Форма временно недоступна: не настроены NEXT_PUBLIC_RESEND_API_KEY и NEXT_PUBLIC_LEAD_TO_EMAIL.'
       if (source === 'main') {
         setLeadFormStatus({ type: 'error', message: configError })
       } else {
@@ -310,11 +322,59 @@ export default function HomePage() {
       return
     }
 
+    const sourceLabel = source === 'modal' ? 'Callback modal' : 'Main form'
+    const rows: Array<[string, string]> = [
+      ['Source', sourceLabel],
+      ['Name', payload.name],
+      ['Phone', payload.phone],
+      ['Service', payload.service || 'Not specified'],
+      ['Comment', payload.comment || 'Not specified'],
+      ['Consent', payload.consent ? 'Confirmed' : 'Not confirmed'],
+      [
+        'Submitted at',
+        new Intl.DateTimeFormat('ru-RU', {
+          dateStyle: 'full',
+          timeStyle: 'short',
+          timeZone: 'Europe/Moscow',
+        }).format(new Date()),
+      ],
+    ]
+
+    const html = `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
+        <h2 style="margin:0 0 16px">Новая заявка с сайта</h2>
+        <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:640px">
+          <tbody>
+            ${rows
+              .map(
+                ([label, value]) => `
+                  <tr>
+                    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:700">${escapeHtml(label)}</td>
+                    <td style="padding:8px 12px;border:1px solid #e2e8f0">${escapeHtml(value)}</td>
+                  </tr>
+                `,
+              )
+              .join('')}
+          </tbody>
+        </table>
+      </div>
+    `
+
     try {
-      const response = await fetch(leadEndpoint, {
+      const resendPayload = {
+        from: resendFromEmail,
+        to: leadToEmail,
+        subject: `Новая заявка с сайта: ${payload.name}`,
+        html,
+      }
+
+      const response = await fetch(resendApiEndpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resendPayload),
       })
       const responseText = await response.text()
       let responsePayload: { message?: string } = {}
@@ -325,7 +385,7 @@ export default function HomePage() {
       }
 
       if (!response.ok) {
-        throw new Error(responsePayload.message ?? 'Не удалось отправить заявку.')
+        throw new Error(responsePayload.message ?? 'Не удалось отправить заявку через Resend.')
       }
 
       const successMessage = 'Заявка отправлена. Мы скоро свяжемся с вами.'
@@ -573,13 +633,12 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex w-full sm:justify-start justify-center flex-wrap items-center gap-2 pb-1 text-sm text-slate-700 sm:gap-3">
+              <div className="flex w-full justify-center flex-wrap items-center gap-2 pb-1 text-sm text-slate-700 sm:gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" /> Бесплатный замер
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" /> Гарантия до 3 лет
-                </span>
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Гарантия</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" /> Фиксированная смета
                 </span>
@@ -716,7 +775,7 @@ export default function HomePage() {
             {[
               '/images/works/23.jpg',
               '/images/works/20.jpg',
-              '/images/works/3.jpg',
+              '/images/works/26.jpg',
               '/images/works/4.jpg',
             ].map((imageSrc, index) => (
               <button
