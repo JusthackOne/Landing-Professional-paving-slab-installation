@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { buttonVariants } from '@/components/ui/button'
@@ -31,11 +32,14 @@ export default function PortfolioPage() {
               className="mb-3 break-inside-avoid overflow-hidden rounded-lg border bg-card"
               key={image.src}
             >
-              <img
+              <Image
                 alt={`Пример работы ${index + 1}`}
                 className="h-auto w-full"
+                height={1200}
                 loading="lazy"
                 src={image.src}
+                unoptimized
+                width={1600}
               />
             </div>
           ))}
