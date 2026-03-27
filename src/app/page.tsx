@@ -785,14 +785,12 @@ export default function HomePage() {
                 onClick={() => setSelectedWorkImage({ src: imageSrc })}
                 type="button"
               >
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   alt={`Пример работы ${index + 1}`}
                   className="h-64 w-full object-cover object-center sm:h-72 lg:h-80"
-                  height={640}
                   loading="eager"
                   src={imageSrc}
-                  unoptimized
-                  width={960}
                 />
               </button>
             ))}
@@ -1245,14 +1243,12 @@ export default function HomePage() {
             >
               <X className="h-4 w-4" />
             </button>
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               alt="Увеличенный пример работы"
               className="max-h-[92vh] w-full rounded-xl object-contain"
-              height={1200}
               loading="eager"
               src={selectedWorkImage.src}
-              unoptimized
-              width={1600}
             />
           </div>
         </div>
