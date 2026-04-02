@@ -33,10 +33,10 @@ Create `.env.local`:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
-NEXT_PUBLIC_LEAD_ENDPOINT=https://your-lead-endpoint.example.com/webhook
+NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-`NEXT_PUBLIC_LEAD_ENDPOINT` should point to an external form handler (for example, your own endpoint that sends email via Resend).
+`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` is required for form submission from static build.  
 
 ## Static Deployment
 

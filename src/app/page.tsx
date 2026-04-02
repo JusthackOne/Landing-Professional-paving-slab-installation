@@ -1,10 +1,12 @@
 ﻿'use client'
 
 import {
+  AlertCircle,
   ArrowRight,
   CheckCircle2,
   Clock3,
   Hammer,
+  Loader2,
   MapPin,
   Maximize2,
   Menu,
@@ -136,32 +138,110 @@ const navSections = [
   { href: '#faq', label: 'FAQ' },
 ]
 
-const resendApiEndpoint = 'https://api.resend.com/emails'
-const resendApiKey = process.env.NEXT_PUBLIC_RESEND_API_KEY?.trim() ?? ''
-const leadToEmail = process.env.NEXT_PUBLIC_LEAD_TO_EMAIL?.trim() ?? ''
-const resendFromEmail = process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL?.trim() ?? 'onboarding@resend.dev'
+const web3FormsApiEndpoint = 'https://api.web3forms.com/submit'
+const web3FormsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() ?? ''
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, '') ?? ''
+const yandexMetrikaId = 108266591
+const phoneNumber = '+79671652525'
+const fallbackPhoneDisplay = '+7 (967) 165-25-25'
+const submissionLimitMessage = `Форма временно не работает из-за лимита заявок. Пожалуйста, позвоните по номеру ${fallbackPhoneDisplay}.`
 
-const escapeHtml = (value: string) =>
-  value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
+const isSubmissionLimitError = (statusCode: number, rawMessage: string) => {
+  if (statusCode === 429) return true
+
+  const message = rawMessage.toLowerCase()
+  const limitSignals = [
+    'limit',
+    'quota',
+    'too many',
+    'rate limit',
+    'exceed',
+    'submission',
+    'credit',
+    'upgrade',
+    'лимит',
+    'квот',
+    'превыш',
+  ]
+  return limitSignals.some((signal) => message.includes(signal))
+}
+
+const trackYandexGoal = (goal: string, params: Record<string, string> = {}) => {
+  if (typeof window === 'undefined') return
+
+  const windowWithYm = window as Window & { ym?: (..._args: unknown[]) => void }
+  if (typeof windowWithYm.ym === 'function') {
+    windowWithYm.ym(yandexMetrikaId, 'reachGoal', goal, params)
+  }
+
+  const windowWithDataLayer = window as Window & { dataLayer?: Array<Record<string, unknown>> }
+  if (Array.isArray(windowWithDataLayer.dataLayer)) {
+    windowWithDataLayer.dataLayer.push({
+      event: 'yandex_goal',
+      goal,
+      ...params,
+    })
+  }
+}
+
+type FormStatus = {
+  type: 'idle' | 'loading' | 'success' | 'error'
+  message: string
+}
+
+const defaultFormStatus: FormStatus = { type: 'idle', message: '' }
+
+const FormStatusBanner = ({ status }: { status: FormStatus }) => {
+  if (status.type === 'idle') return null
+
+  const config =
+    status.type === 'loading'
+      ? {
+          icon: Loader2,
+          containerClass:
+            'border-primary/25 bg-primary/5 text-primary shadow-primary/10 animate-pulse',
+          iconClass: 'animate-spin',
+          label: 'Статус отправки',
+        }
+      : status.type === 'success'
+        ? {
+            icon: CheckCircle2,
+            containerClass:
+              'border-emerald-300/60 bg-emerald-50 text-emerald-800 shadow-emerald-100',
+            iconClass: '',
+            label: 'Успешно',
+          }
+        : {
+            icon: AlertCircle,
+            containerClass: 'border-rose-300/60 bg-rose-50 text-rose-800 shadow-rose-100',
+            iconClass: '',
+            label: 'Ошибка',
+          }
+
+  const Icon = config.icon
+
+  return (
+    <div
+      aria-live="polite"
+      className={`mt-1 flex items-start gap-2 rounded-xl border px-3 py-2 text-xs leading-relaxed shadow-sm transition-all sm:text-sm ${config.containerClass}`}
+      role="status"
+    >
+      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${config.iconClass}`} />
+      <div className="min-w-0">
+        <p className="font-semibold">{config.label}</p>
+        <p className="break-words">{status.message}</p>
+      </div>
+    </div>
+  )
+}
 
 export default function HomePage() {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
   const [callFormService, setCallFormService] = useState('')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isNavbarCompact, setIsNavbarCompact] = useState(false)
-  const [leadFormStatus, setLeadFormStatus] = useState<{
-    type: 'idle' | 'loading' | 'success' | 'error'
-    message: string
-  }>({ type: 'idle', message: '' })
-  const [callFormStatus, setCallFormStatus] = useState<{
-    type: 'idle' | 'loading' | 'success' | 'error'
-    message: string
-  }>({ type: 'idle', message: '' })
+  const [leadFormStatus, setLeadFormStatus] = useState<FormStatus>(defaultFormStatus)
+  const [callFormStatus, setCallFormStatus] = useState<FormStatus>(defaultFormStatus)
   const [activeVideoIndex, setActiveVideoIndex] = useState(0)
   const [isVideoMuted, setIsVideoMuted] = useState(true)
   const [isVideoPaused, setIsVideoPaused] = useState(false)
@@ -223,7 +303,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isCallModalOpen) {
-      setCallFormStatus({ type: 'idle', message: '' })
+      setCallFormStatus(defaultFormStatus)
     }
   }, [isCallModalOpen])
 
@@ -291,6 +371,13 @@ export default function HomePage() {
     setIsCallModalOpen(true)
   }
 
+  const handlePhoneClick = (placement: string) => {
+    trackYandexGoal('phone_click', {
+      placement,
+      phone: phoneNumber,
+    })
+  }
+
   const submitLead = async (event: FormEvent<HTMLFormElement>, source: 'main' | 'modal') => {
     event.preventDefault()
 
@@ -311,9 +398,9 @@ export default function HomePage() {
       setCallFormStatus({ type: 'loading', message: 'Отправляем заявку...' })
     }
 
-    if (!resendApiKey || !leadToEmail) {
+    if (!web3FormsAccessKey) {
       const configError =
-        'Форма временно недоступна: не настроены NEXT_PUBLIC_RESEND_API_KEY и NEXT_PUBLIC_LEAD_TO_EMAIL.'
+        'Форма временно недоступна: не настроена NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY.'
       if (source === 'main') {
         setLeadFormStatus({ type: 'error', message: configError })
       } else {
@@ -322,73 +409,60 @@ export default function HomePage() {
       return
     }
 
-    const sourceLabel = source === 'modal' ? 'Callback modal' : 'Main form'
-    const rows: Array<[string, string]> = [
-      ['Source', sourceLabel],
-      ['Name', payload.name],
-      ['Phone', payload.phone],
-      ['Service', payload.service || 'Not specified'],
-      ['Comment', payload.comment || 'Not specified'],
-      ['Consent', payload.consent ? 'Confirmed' : 'Not confirmed'],
-      [
-        'Submitted at',
-        new Intl.DateTimeFormat('ru-RU', {
-          dateStyle: 'full',
-          timeStyle: 'short',
-          timeZone: 'Europe/Moscow',
-        }).format(new Date()),
-      ],
-    ]
-
-    const html = `
-      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
-        <h2 style="margin:0 0 16px">Новая заявка с сайта</h2>
-        <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:640px">
-          <tbody>
-            ${rows
-              .map(
-                ([label, value]) => `
-                  <tr>
-                    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:700">${escapeHtml(label)}</td>
-                    <td style="padding:8px 12px;border:1px solid #e2e8f0">${escapeHtml(value)}</td>
-                  </tr>
-                `,
-              )
-              .join('')}
-          </tbody>
-        </table>
-      </div>
-    `
-
+    const sourceLabel =
+      source === 'modal' ? 'Модальное окно «Заказать звонок»' : 'Основная форма «Оставить заявку»'
     try {
-      const resendPayload = {
-        from: resendFromEmail,
-        to: leadToEmail,
-        subject: `Новая заявка с сайта: ${payload.name}`,
-        html,
-      }
+      const submittedAt = new Intl.DateTimeFormat('ru-RU', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+        timeZone: 'Europe/Moscow',
+      }).format(new Date())
 
-      const response = await fetch(resendApiEndpoint, {
+      const web3FormsPayload: Record<string, string> = {
+        access_key: web3FormsAccessKey,
+        subject: `🟢 Новая заявка ARTIS`,
+        from_name: 'ARTIS | Заявка с сайта',
+        'Имя клиента': payload.name,
+        Телефон: payload.phone,
+      }
+      if (payload.comment) web3FormsPayload.Комментарий = payload.comment
+      if (payload.service) web3FormsPayload.Услуга = payload.service
+      web3FormsPayload.Источник = sourceLabel
+      web3FormsPayload['Дата отправки'] = submittedAt
+      web3FormsPayload['Сайт компании'] = siteUrl || 'Не указан'
+      web3FormsPayload.botcheck = ''
+
+      const response = await fetch(web3FormsApiEndpoint, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${resendApiKey}`,
           'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
-        body: JSON.stringify(resendPayload),
+        body: JSON.stringify(web3FormsPayload),
       })
       const responseText = await response.text()
-      let responsePayload: { message?: string } = {}
+      let responsePayload: { message?: string; success?: boolean } = {}
       try {
-        responsePayload = JSON.parse(responseText) as { message?: string }
+        responsePayload = JSON.parse(responseText) as { message?: string; success?: boolean }
       } catch {
         responsePayload = {}
       }
 
-      if (!response.ok) {
-        throw new Error(responsePayload.message ?? 'Не удалось отправить заявку через Resend.')
+      if (!response.ok || !responsePayload.success) {
+        const apiErrorMessage =
+          responsePayload.message ?? 'Не удалось отправить заявку через Web3Forms.'
+
+        if (isSubmissionLimitError(response.status, apiErrorMessage)) {
+          throw new Error(submissionLimitMessage)
+        }
+
+        throw new Error(apiErrorMessage)
       }
 
       const successMessage = 'Заявка отправлена. Мы скоро свяжемся с вами.'
+      trackYandexGoal('form_submit', {
+        source: source === 'main' ? 'main_form' : 'callback_modal',
+      })
       if (source === 'main') {
         setLeadFormStatus({ type: 'success', message: successMessage })
       } else {
@@ -464,6 +538,7 @@ export default function HomePage() {
                   <a
                     className="inline-flex items-center gap-2 text-sm font-medium text-foreground"
                     href="tel:+79671652525"
+                    onClick={() => handlePhoneClick('header_desktop')}
                   >
                     <Phone className="h-4 w-4 text-primary" />
                     +7 (967) 165-25-25
@@ -553,6 +628,7 @@ export default function HomePage() {
               <a
                 className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-foreground"
                 href="tel:+79671652525"
+                onClick={() => handlePhoneClick('mobile_menu')}
               >
                 <Phone className="h-4 w-4 text-primary" />
                 +7 (967) 165-25-25
@@ -977,9 +1053,17 @@ export default function HomePage() {
                 </p>
 
                 <form
+                  aria-busy={leadFormStatus.type === 'loading'}
                   className="mt-6 grid w-full min-w-0 max-w-full gap-3"
                   onSubmit={(event) => submitLead(event, 'main')}
                 >
+                  <input
+                    autoComplete="off"
+                    className="hidden"
+                    name="botcheck"
+                    tabIndex={-1}
+                    type="text"
+                  />
                   <input
                     className="block h-11 w-full min-w-0 max-w-full box-border rounded-md border bg-background px-3 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                     name="name"
@@ -1014,17 +1098,16 @@ export default function HomePage() {
                     disabled={leadFormStatus.type === 'loading'}
                     type="submit"
                   >
-                    Получить бесплатную консультацию
+                    {leadFormStatus.type === 'loading' ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Отправляем заявку...
+                      </span>
+                    ) : (
+                      'Получить бесплатную консультацию'
+                    )}
                   </Button>
-                  {leadFormStatus.type !== 'idle' ? (
-                    <p
-                      className={`break-words text-xs ${
-                        leadFormStatus.type === 'success' ? 'text-emerald-700' : 'text-red-600'
-                      }`}
-                    >
-                      {leadFormStatus.message}
-                    </p>
-                  ) : null}
+                  <FormStatusBanner status={leadFormStatus} />
                 </form>
               </div>
             </div>
@@ -1100,7 +1183,11 @@ export default function HomePage() {
               </p>
 
               <div className="sm:ml-6 ml-0 flex flex-col justify-center sm:items-start items-center space-y-2 text-sm text-foreground">
-                <a className="inline-flex items-center gap-2 font-semibold" href="tel:+79671652525">
+                <a
+                  className="inline-flex items-center gap-2 font-semibold"
+                  href="tel:+79671652525"
+                  onClick={() => handlePhoneClick('footer')}
+                >
                   <Phone className="h-4 w-4 text-primary" />
                   +7 (967) 165-25-25
                 </a>{' '}
@@ -1108,6 +1195,10 @@ export default function HomePage() {
                   <MessageCircleMore className="h-4 w-4 text-primary" />
                   artis-plitka@yandex.ru
                 </a>
+                <p className="inline-flex items-start gap-2 text-center sm:text-left">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>Офис: Москва, Волжский бульвар д.3 к.2, каб.2</span>
+                </p>
               </div>
             </div>
 
@@ -1172,9 +1263,17 @@ export default function HomePage() {
             </p>
 
             <form
+              aria-busy={callFormStatus.type === 'loading'}
               className="grid w-full min-w-0 grid-cols-1 gap-3 [&>*]:max-w-full [&>*]:min-w-0 [&>*]:w-full"
               onSubmit={(event) => submitLead(event, 'modal')}
             >
+              <input
+                autoComplete="off"
+                className="hidden"
+                name="botcheck"
+                tabIndex={-1}
+                type="text"
+              />
               <input
                 className="block h-11 w-full min-w-0 max-w-full box-border rounded-md border bg-background px-3 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                 name="name"
@@ -1209,18 +1308,17 @@ export default function HomePage() {
                   </span>
                 </span>
               </label>
-              <Button disabled={callFormStatus.type === 'loading'} type="submit">
-                Отправить
+              <Button className="h-11" disabled={callFormStatus.type === 'loading'} type="submit">
+                {callFormStatus.type === 'loading' ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Отправляем...
+                  </span>
+                ) : (
+                  'Отправить'
+                )}
               </Button>
-              {callFormStatus.type !== 'idle' ? (
-                <p
-                  className={`text-xs ${
-                    callFormStatus.type === 'success' ? 'text-emerald-700' : 'text-red-600'
-                  }`}
-                >
-                  {callFormStatus.message}
-                </p>
-              ) : null}
+              <FormStatusBanner status={callFormStatus} />
             </form>
           </div>
         </div>
