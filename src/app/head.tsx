@@ -9,13 +9,13 @@ function resolveSiteUrl() {
     return defaultSiteUrl
   }
 }
-
 export default function Head() {
   const siteUrl = resolveSiteUrl()
   const title = 'Укладка тротуарной плитки в Москве и МО | ARTIS'
   const description =
     'Укладка тротуарной плитки, брусчатки и благоустройство участков в Москве и Московской области. Бесплатный замер, точная смета, монтаж под ключ.'
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID?.trim()
+  const yandexMetrikaId = 108266591
 
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
@@ -66,8 +66,6 @@ export default function Head() {
       <meta content="ARTIS - укладка тротуарной плитки" property="og:image:alt" />
       <meta content="summary_large_image" name="twitter:card" />
       <meta content={`${siteUrl}/images/bg/mainSection2.jpg`} name="twitter:image" />
-      <link href="/favicon.png" rel="icon" sizes="32x32" type="image/png" />
-      <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
       {gtmId ? (
         <Script
           id="gtm-init"
@@ -81,6 +79,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
       ) : null}
+      <Script
+        id="yandex-metrika-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${yandexMetrikaId}','ym');ym(${yandexMetrikaId},'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:'dataLayer',referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`,
+        }}
+      />
       <script
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         type="application/ld+json"

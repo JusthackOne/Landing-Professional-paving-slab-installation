@@ -46,13 +46,11 @@ export const metadata: Metadata = {
       'ru-RU': '/',
     },
   },
+  manifest: '/site.webmanifest',
   icons: {
-    icon: [
-      { url: '/favicon.png', type: 'image/png' },
-      { url: '/images/logos/logo.png', type: 'image/png' },
-    ],
-    apple: [{ url: '/apple-touch-icon.png' }],
-    shortcut: ['/favicon.png'],
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon.png',
   },
   robots: {
     index: true,
@@ -94,12 +92,13 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0d6b37',
+  themeColor: '#ffffff',
   colorScheme: 'light',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID?.trim()
+  const yandexMetrikaId = 108266591
 
   return (
     <html lang="ru" suppressHydrationWarning>
@@ -115,6 +114,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
           </noscript>
         ) : null}
+        <noscript>
+          <div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt=""
+              src={`https://mc.yandex.ru/watch/${yandexMetrikaId}`}
+              style={{ left: '-9999px', position: 'absolute' }}
+            />
+          </div>
+        </noscript>
         {children}
         <Analytics />
         <SpeedInsights />
