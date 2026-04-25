@@ -1,4 +1,4 @@
-const defaultSiteUrl = 'https://example.com'
+const defaultSiteUrl = 'https://xn--80aab1b2agif1b.xn--80adxhks'
 
 function resolveSiteUrl() {
   try {

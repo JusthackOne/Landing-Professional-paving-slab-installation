@@ -502,11 +502,11 @@ export default function HomePage() {
                 isNavbarCompact ? 'py-2' : 'py-3'
               }`}
             >
-              <div className="flex items-center justify-between md:hidden">
-                <div className="flex items-center justify-center rounded-full border-2 border-white bg-white px-4 py-2 shadow-md">
+              <div className="flex items-center justify-between gap-2 md:hidden">
+                <div className="flex shrink-0 items-center justify-center rounded-full border-2 border-white bg-white px-3 py-1.5 shadow-md">
                   <Image
                     alt="Логотип ARTIS"
-                    className="h-8 w-auto"
+                    className="h-6 w-auto"
                     height={64}
                     priority
                     src="/images/logos/logo.png"
@@ -514,11 +514,20 @@ export default function HomePage() {
                   />
                 </div>
 
+                <a
+                  className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary/15 bg-white px-2 py-2 text-[11px] font-medium leading-none text-foreground shadow-sm"
+                  href={`tel:${phoneNumber}`}
+                  onClick={() => handlePhoneClick('header_mobile')}
+                >
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-primary" />
+                  <span className="truncate whitespace-nowrap">{fallbackPhoneDisplay}</span>
+                </a>
+
                 <button
                   aria-controls="mobile-navigation"
                   aria-expanded={isMobileMenuOpen}
                   aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-primary/20 bg-white text-primary"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-white text-primary"
                   onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                   type="button"
                 >

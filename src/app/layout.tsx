@@ -6,7 +6,7 @@ import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
-const defaultSiteUrl = 'https://example.com'
+const defaultSiteUrl = 'https://xn--80aab1b2agif1b.xn--80adxhks'
 
 function resolveBaseUrl() {
   try {

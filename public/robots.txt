@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://example.com/sitemap.xml
+Host: xn--80aab1b2agif1b.xn--80adxhks
+Sitemap: https://xn--80aab1b2agif1b.xn--80adxhks/sitemap.xml
