@@ -41,6 +41,10 @@ export default function Head() {
   return (
     <>
       <meta charSet="utf-8" />
+      <link href="/favicon.ico" rel="icon" sizes="any" />
+      <link href="/favicon.png" rel="icon" sizes="371x385" type="image/png" />
+      <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
+      <link href="/site.webmanifest" rel="manifest" />
       <meta content="IE=edge" httpEquiv="X-UA-Compatible" />
       <meta content="telephone=no" name="format-detection" />
       <meta content="ru" name="language" />

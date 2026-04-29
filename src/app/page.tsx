@@ -142,6 +142,8 @@ const web3FormsApiEndpoint = 'https://api.web3forms.com/submit'
 const web3FormsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() ?? ''
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, '') ?? ''
 const yandexMetrikaId = 108266591
+const yandexMetrikaStatUrl = `https://metrika.yandex.ru/stat/?id=${yandexMetrikaId}&from=informer`
+const yandexMetrikaInformerSrc = `https://informer.yandex.ru/informer/${yandexMetrikaId}/3_1_FFFFFFFF_EFEFEFFF_0_pageviews`
 const phoneNumber = '+79671652525'
 const fallbackPhoneDisplay = '+7 (967) 165-25-25'
 const submissionLimitMessage = `Форма временно не работает из-за лимита заявок. Пожалуйста, позвоните по номеру ${fallbackPhoneDisplay}.`
@@ -1231,7 +1233,23 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-sm text-muted-foreground">
             <Link href="/privacy-policy">Политика конфиденциальности</Link>
-            <p>© 2025, ARTIS</p>
+            <div className="flex items-center gap-3">
+              <a href={yandexMetrikaStatUrl} rel="nofollow noopener noreferrer" target="_blank">
+                {/* Yandex provides the informer as a dynamic external image. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt="Яндекс.Метрика"
+                  className="ym-advanced-informer"
+                  data-cid={yandexMetrikaId}
+                  data-lang="ru"
+                  height="31"
+                  src={yandexMetrikaInformerSrc}
+                  title="Яндекс.Метрика: данные за сегодня"
+                  width="88"
+                />
+              </a>
+              <p>© 2025, ARTIS</p>
+            </div>
           </div>
         </div>
       </footer>
