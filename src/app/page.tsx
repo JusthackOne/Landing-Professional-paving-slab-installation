@@ -1,4 +1,4 @@
-﻿'use client'
+﻿"use client";
 
 import {
   AlertCircle,
@@ -20,207 +20,229 @@ import {
   Volume2,
   VolumeX,
   X,
-} from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { workImages } from '@/data/work-images'
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { workImages } from "@/data/work-images";
 
 const advantages = [
   {
-    title: 'Точное основание',
-    description: 'Подготовка пирога основания по нагрузке участка, чтобы покрытие не проседало.',
+    title: "Точное основание",
+    description:
+      "Подготовка пирога основания по нагрузке участка, чтобы покрытие не проседало.",
     icon: Ruler,
   },
   {
-    title: 'Чистая геометрия',
-    description: 'Ровные швы, аккуратные подрезки и соблюдение уклонов для отвода воды.',
+    title: "Чистая геометрия",
+    description:
+      "Ровные швы, аккуратные подрезки и соблюдение уклонов для отвода воды.",
     icon: Hammer,
   },
   {
-    title: 'Гарантия на работы',
-    description: 'Фиксируем объем, сроки и стоимость в договоре, предоставляем гарантию.',
+    title: "Гарантия на работы",
+    description:
+      "Фиксируем объем, сроки и стоимость в договоре, предоставляем гарантию.",
     icon: ShieldCheck,
   },
-]
+];
 
 const trustHighlights = [
-  { value: '12+', label: 'лет в мощении' },
-  { value: '300+', label: 'сданных объектов' },
-  { value: '98%', label: 'приемка с первого раза' },
-]
+  { value: "12+", label: "лет в мощении" },
+  { value: "300+", label: "сданных объектов" },
+  { value: "98%", label: "приемка с первого раза" },
+];
 
 const steps = [
-  'Выезд и бесплатный замер на объекте',
-  'Смета и план укладки под ваш бюджет',
-  'Подготовка основания и установка бордюра',
-  'Укладка тротуарной плитки, трамбовка и расшивка швов',
-  'Финальная приемка и рекомендации по уходу',
-]
+  "Выезд и бесплатный замер на объекте",
+  "Смета и план укладки под ваш бюджет",
+  "Подготовка основания и установка бордюра",
+  "Укладка тротуарной плитки, трамбовка и расшивка швов",
+  "Финальная приемка и рекомендации по уходу",
+];
 
-const stepIcons = [Phone, Ruler, PackageCheck, Hammer, CheckCircle2]
+const stepIcons = [Phone, Ruler, PackageCheck, Hammer, CheckCircle2];
 
 const faqs = [
   {
-    q: 'Сколько стоит укладка тротуарной плитки?',
-    a: 'Стоимость зависит от площади, типа основания, выбранной плитки и сложности рисунка. Точную цену даем после замера.',
+    q: "Сколько стоит укладка тротуарной плитки?",
+    a: "Стоимость зависит от площади, типа основания, выбранной плитки и сложности рисунка. Точную цену даем после замера.",
   },
   {
-    q: 'Сколько по времени идет работа?',
-    a: 'В среднем 3-10 дней. Большие площади и сложная подготовка основания требуют больше времени.',
+    q: "Сколько по времени идет работа?",
+    a: "В среднем 3-10 дней. Большие площади и сложная подготовка основания требуют больше времени.",
   },
   {
-    q: 'Можно ли уложить плитку на старое основание?',
-    a: 'Иногда можно, но только после осмотра. Если основание слабое, рекомендуем частичную или полную замену.',
+    q: "Можно ли уложить плитку на старое основание?",
+    a: "Иногда можно, но только после осмотра. Если основание слабое, рекомендуем частичную или полную замену.",
   },
-]
+];
 
 const pricingItems = [
   {
-    service: 'Укладка на ЦПС на готовое бетонное основание',
-    price: 'от 1 400 руб/м2',
-    image: '/images/works/1.jpg',
+    service: "Укладка на ЦПС на готовое бетонное основание",
+    price: "от 1 400 руб/м2",
+    image: "/images/works/28.jpg",
   },
   {
-    service: 'Укладка на плиточный клей (гребенка по двум сторонам камня)',
-    price: 'от 1 800 руб/м2',
-    image: '/images/works/20.jpg',
+    service: "Укладка на плиточный клей (гребенка по двум сторонам камня)",
+    price: "от 1 800 руб/м2",
+    image: "/images/works/20.jpg",
   },
   {
-    service: 'Укладка на двухкомпонентный трассовый раствор',
-    price: 'от 3 000 руб/м2',
-    image: '/images/works/28.jpg',
+    service: "Укладка на двухкомпонентный трассовый раствор",
+    price: "от 3 000 руб/м2",
+    image: "/images/works/1.jpg",
   },
   {
-    service: 'Укладка на почву с полной подготовкой основания (подушка 200 мм)',
-    price: 'от 1 500 руб/м2 (площадки), от 1 600 руб/п.м. или м2 (пешеходные зоны)',
-    image: '/images/works/30.jpg',
+    service: "Укладка на почву с полной подготовкой основания (подушка 200 мм)",
+    price: "от 1 600 руб/м2",
+    image: "/images/works/30.jpg",
   },
   {
-    service: 'Укладка клинкерной брусчатки на готовое монолитное основание на клей',
-    price: 'от 2 500 руб/м2',
-    image: '/images/works/27.jpg',
+    service:
+      "Укладка клинкерной брусчатки на готовое монолитное основание на клей",
+    price: "от 2 500 руб/м2",
+    image: "/images/works/35.jpg",
   },
   {
-    service: 'Укладка натурального камня на готовое бетонное основание',
-    price: 'от 2 200 руб/м2',
-    image: '/images/works/31.jpg',
+    service: "Укладка натурального камня на готовое бетонное основание",
+    price: "от 2 200 руб/м2",
+    image: "/images/works/31.jpg",
   },
   {
-    service: 'Укладка полудрагоценного камня в эпоксиде по монолитному основанию',
-    price: 'от 24 000 руб/м2 (полный цикл)',
-    image: '/images/works/32.jpg',
+    service:
+      "Укладка полудрагоценного камня в эпоксиде по монолитному основанию",
+    price: "от 9 000 руб/м2 (полный цикл)",
+    image: "/images/works/32.jpg",
   },
   {
-    service: 'Установка садового бордюрного камня',
-    price: 'от 500 руб/п.м.',
-    image: '/images/works/33.jpg',
+    service: "Установка садового бордюрного камня",
+    price: "от 500 руб/п.м.",
+    image: "/images/works/33.jpg",
   },
   {
-    service: 'Установка дорожного бордюрного камня',
-    price: 'от 950 руб/п.м.',
-    image: '/images/works/34.jpg',
+    service: "Установка дорожного бордюрного камня",
+    price: "от 950 руб/п.м.",
+    image: "/images/works/34.jpg",
   },
-]
+];
 
-const heroVideos = ['/videos/main/1.mp4', '/videos/main/2.mp4', '/videos/main/3.mp4']
+const heroVideos = [
+  "/videos/main/1.mp4",
+  "/videos/main/2.mp4",
+  "/videos/main/3.mp4",
+];
 
 const navSections = [
-  { href: '#hero', label: 'Главная' },
-  { href: '#pricing', label: 'Цены' },
-  { href: '#works', label: 'Примеры работ' },
-  { href: '#advantages', label: 'Почему нас выбирают' },
-  { href: '#process', label: 'Как проходит работа' },
-  { href: '#lead-form', label: 'Оставить заявку' },
-  { href: '#faq', label: 'FAQ' },
-]
+  { href: "#hero", label: "Главная" },
+  { href: "#pricing", label: "Цены" },
+  { href: "#works", label: "Примеры работ" },
+  { href: "#advantages", label: "Почему нас выбирают" },
+  { href: "#process", label: "Как проходит работа" },
+  { href: "#lead-form", label: "Оставить заявку" },
+  { href: "#faq", label: "FAQ" },
+];
 
-const web3FormsApiEndpoint = 'https://api.web3forms.com/submit'
-const web3FormsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() ?? ''
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, '') ?? ''
-const yandexMetrikaId = 108266591
-const yandexMetrikaStatUrl = `https://metrika.yandex.ru/stat/?id=${yandexMetrikaId}&from=informer`
-const yandexMetrikaInformerSrc = `https://informer.yandex.ru/informer/${yandexMetrikaId}/3_1_FFFFFFFF_EFEFEFFF_0_pageviews`
-const phoneNumber = '+79671652525'
-const fallbackPhoneDisplay = '+7 (967) 165-25-25'
-const submissionLimitMessage = `Форма временно не работает из-за лимита заявок. Пожалуйста, позвоните по номеру ${fallbackPhoneDisplay}.`
+const web3FormsApiEndpoint = "https://api.web3forms.com/submit";
+const web3FormsAccessKey =
+  process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() ?? "";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, "") ?? "";
+const yandexMetrikaId = 108266591;
+const yandexMetrikaStatUrl = `https://metrika.yandex.ru/stat/?id=${yandexMetrikaId}&from=informer`;
+const yandexMetrikaInformerSrc = `https://informer.yandex.ru/informer/${yandexMetrikaId}/3_1_FFFFFFFF_EFEFEFFF_0_pageviews`;
+const phoneNumber = "+79671652525";
+const fallbackPhoneDisplay = "+7 (967) 165-25-25";
+const submissionLimitMessage = `Форма временно не работает из-за лимита заявок. Пожалуйста, позвоните по номеру ${fallbackPhoneDisplay}.`;
 
 const isSubmissionLimitError = (statusCode: number, rawMessage: string) => {
-  if (statusCode === 429) return true
+  if (statusCode === 429) return true;
 
-  const message = rawMessage.toLowerCase()
+  const message = rawMessage.toLowerCase();
   const limitSignals = [
-    'limit',
-    'quota',
-    'too many',
-    'rate limit',
-    'exceed',
-    'submission',
-    'credit',
-    'upgrade',
-    'лимит',
-    'квот',
-    'превыш',
-  ]
-  return limitSignals.some((signal) => message.includes(signal))
-}
+    "limit",
+    "quota",
+    "too many",
+    "rate limit",
+    "exceed",
+    "submission",
+    "credit",
+    "upgrade",
+    "лимит",
+    "квот",
+    "превыш",
+  ];
+  return limitSignals.some((signal) => message.includes(signal));
+};
 
 const trackYandexGoal = (goal: string, params: Record<string, string> = {}) => {
-  if (typeof window === 'undefined') return
+  if (typeof window === "undefined") return;
 
-  const windowWithYm = window as Window & { ym?: (..._args: unknown[]) => void }
-  if (typeof windowWithYm.ym === 'function') {
-    windowWithYm.ym(yandexMetrikaId, 'reachGoal', goal, params)
+  const windowWithYm = window as Window & {
+    ym?: (..._args: unknown[]) => void;
+  };
+  if (typeof windowWithYm.ym === "function") {
+    windowWithYm.ym(yandexMetrikaId, "reachGoal", goal, params);
   }
 
-  const windowWithDataLayer = window as Window & { dataLayer?: Array<Record<string, unknown>> }
+  const windowWithDataLayer = window as Window & {
+    dataLayer?: Array<Record<string, unknown>>;
+  };
   if (Array.isArray(windowWithDataLayer.dataLayer)) {
     windowWithDataLayer.dataLayer.push({
-      event: 'yandex_goal',
+      event: "yandex_goal",
       goal,
       ...params,
-    })
+    });
   }
-}
+};
 
 type FormStatus = {
-  type: 'idle' | 'loading' | 'success' | 'error'
-  message: string
-}
+  type: "idle" | "loading" | "success" | "error";
+  message: string;
+};
 
-const defaultFormStatus: FormStatus = { type: 'idle', message: '' }
+const defaultFormStatus: FormStatus = { type: "idle", message: "" };
 
 const FormStatusBanner = ({ status }: { status: FormStatus }) => {
-  if (status.type === 'idle') return null
+  if (status.type === "idle") return null;
 
   const config =
-    status.type === 'loading'
+    status.type === "loading"
       ? {
           icon: Loader2,
           containerClass:
-            'border-primary/25 bg-primary/5 text-primary shadow-primary/10 animate-pulse',
-          iconClass: 'animate-spin',
-          label: 'Статус отправки',
+            "border-primary/25 bg-primary/5 text-primary shadow-primary/10 animate-pulse",
+          iconClass: "animate-spin",
+          label: "Статус отправки",
         }
-      : status.type === 'success'
+      : status.type === "success"
         ? {
             icon: CheckCircle2,
             containerClass:
-              'border-emerald-300/60 bg-emerald-50 text-emerald-800 shadow-emerald-100',
-            iconClass: '',
-            label: 'Успешно',
+              "border-emerald-300/60 bg-emerald-50 text-emerald-800 shadow-emerald-100",
+            iconClass: "",
+            label: "Успешно",
           }
         : {
             icon: AlertCircle,
-            containerClass: 'border-rose-300/60 bg-rose-50 text-rose-800 shadow-rose-100',
-            iconClass: '',
-            label: 'Ошибка',
-          }
+            containerClass:
+              "border-rose-300/60 bg-rose-50 text-rose-800 shadow-rose-100",
+            iconClass: "",
+            label: "Ошибка",
+          };
 
-  const Icon = config.icon
+  const Icon = config.icon;
 
   return (
     <div
@@ -234,256 +256,271 @@ const FormStatusBanner = ({ status }: { status: FormStatus }) => {
         <p className="break-words">{status.message}</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default function HomePage() {
-  const [isCallModalOpen, setIsCallModalOpen] = useState(false)
-  const [callFormService, setCallFormService] = useState('')
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isNavbarCompact, setIsNavbarCompact] = useState(false)
-  const [leadFormStatus, setLeadFormStatus] = useState<FormStatus>(defaultFormStatus)
-  const [callFormStatus, setCallFormStatus] = useState<FormStatus>(defaultFormStatus)
-  const [activeVideoIndex, setActiveVideoIndex] = useState(0)
-  const [isVideoMuted, setIsVideoMuted] = useState(true)
-  const [isVideoPaused, setIsVideoPaused] = useState(false)
-  const [videoDuration, setVideoDuration] = useState(0)
-  const [videoCurrentTime, setVideoCurrentTime] = useState(0)
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [callFormService, setCallFormService] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNavbarCompact, setIsNavbarCompact] = useState(false);
+  const [leadFormStatus, setLeadFormStatus] =
+    useState<FormStatus>(defaultFormStatus);
+  const [callFormStatus, setCallFormStatus] =
+    useState<FormStatus>(defaultFormStatus);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [isVideoPaused, setIsVideoPaused] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const [selectedPricingItem, setSelectedPricingItem] = useState<{
-    service: string
-    price: string
-    image: string
-  } | null>(null)
-  const [selectedWorkImage, setSelectedWorkImage] = useState<{ src: string } | null>(null)
-  const heroVideoRef = useRef<HTMLVideoElement | null>(null)
+    service: string;
+    price: string;
+    image: string;
+  } | null>(null);
+  const [selectedWorkImage, setSelectedWorkImage] = useState<{
+    src: string;
+  } | null>(null);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   const videoProgress = useMemo(() => {
-    if (!videoDuration) return 0
-    return Math.min(100, (videoCurrentTime / videoDuration) * 100)
-  }, [videoCurrentTime, videoDuration])
+    if (!videoDuration) return 0;
+    return Math.min(100, (videoCurrentTime / videoDuration) * 100);
+  }, [videoCurrentTime, videoDuration]);
 
   useEffect(() => {
-    const onScroll = () => setIsNavbarCompact(window.scrollY > 40)
+    const onScroll = () => setIsNavbarCompact(window.scrollY > 40);
 
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
-    if (!isMobileMenuOpen) return
+    if (!isMobileMenuOpen) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsMobileMenuOpen(false)
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
       }
-    }
+    };
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', onKeyDown)
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [isMobileMenuOpen])
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
-    if (!selectedWorkImage && !selectedPricingItem) return
+    if (!selectedWorkImage && !selectedPricingItem) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return
+      if (event.key !== "Escape") return;
 
-      if (selectedWorkImage) setSelectedWorkImage(null)
-      if (selectedPricingItem) setSelectedPricingItem(null)
-    }
+      if (selectedWorkImage) setSelectedWorkImage(null);
+      if (selectedPricingItem) setSelectedPricingItem(null);
+    };
 
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [selectedPricingItem, selectedWorkImage])
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedPricingItem, selectedWorkImage]);
 
   useEffect(() => {
     if (isCallModalOpen) {
-      setCallFormStatus(defaultFormStatus)
+      setCallFormStatus(defaultFormStatus);
     }
-  }, [isCallModalOpen])
+  }, [isCallModalOpen]);
 
   useEffect(() => {
     const popupImageSources = [
       ...workImages.map((image) => image.src),
       ...pricingItems.map((item) => item.image),
-    ]
-    const uniquePopupImageSources = Array.from(new Set(popupImageSources))
+    ];
+    const uniquePopupImageSources = Array.from(new Set(popupImageSources));
 
     const preloadImages = () => {
       uniquePopupImageSources.forEach((src) => {
-        const preloadedImage = new window.Image()
-        preloadedImage.src = src
-      })
+        const preloadedImage = new window.Image();
+        preloadedImage.src = src;
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleCallbackId = window.requestIdleCallback(() => preloadImages());
+      return () => window.cancelIdleCallback(idleCallbackId);
     }
 
-    if ('requestIdleCallback' in window) {
-      const idleCallbackId = window.requestIdleCallback(() => preloadImages())
-      return () => window.cancelIdleCallback(idleCallbackId)
-    }
-
-    const timeoutId = setTimeout(preloadImages, 200)
-    return () => clearTimeout(timeoutId)
-  }, [])
+    const timeoutId = setTimeout(preloadImages, 200);
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
-    const video = heroVideoRef.current
-    if (!video) return
+    const video = heroVideoRef.current;
+    if (!video) return;
 
-    video.currentTime = 0
-    setVideoCurrentTime(0)
+    video.currentTime = 0;
+    setVideoCurrentTime(0);
     if (Number.isFinite(video.duration) && video.duration > 0) {
-      setVideoDuration(video.duration)
+      setVideoDuration(video.duration);
     }
-    video.play().catch(() => undefined)
-    setIsVideoPaused(false)
-  }, [activeVideoIndex])
+    video.play().catch(() => undefined);
+    setIsVideoPaused(false);
+  }, [activeVideoIndex]);
 
   const toggleVideoPlayback = () => {
-    const video = heroVideoRef.current
-    if (!video) return
+    const video = heroVideoRef.current;
+    if (!video) return;
 
     if (video.paused) {
-      video.play().catch(() => undefined)
-      setIsVideoPaused(false)
-      return
+      video.play().catch(() => undefined);
+      setIsVideoPaused(false);
+      return;
     }
 
-    video.pause()
-    setIsVideoPaused(true)
-  }
+    video.pause();
+    setIsVideoPaused(true);
+  };
 
   const toggleVideoMute = () => {
-    const video = heroVideoRef.current
-    if (!video) return
+    const video = heroVideoRef.current;
+    if (!video) return;
 
-    const nextMutedState = !isVideoMuted
-    video.muted = nextMutedState
-    setIsVideoMuted(nextMutedState)
-  }
+    const nextMutedState = !isVideoMuted;
+    video.muted = nextMutedState;
+    setIsVideoMuted(nextMutedState);
+  };
 
-  const openCallModal = (service = '') => {
-    setCallFormService(service)
-    setIsCallModalOpen(true)
-  }
+  const openCallModal = (service = "") => {
+    setCallFormService(service);
+    setIsCallModalOpen(true);
+  };
 
   const handlePhoneClick = (placement: string) => {
-    trackYandexGoal('phone_click', {
+    trackYandexGoal("phone_click", {
       placement,
       phone: phoneNumber,
-    })
-  }
+    });
+  };
 
-  const submitLead = async (event: FormEvent<HTMLFormElement>, source: 'main' | 'modal') => {
-    event.preventDefault()
+  const submitLead = async (
+    event: FormEvent<HTMLFormElement>,
+    source: "main" | "modal",
+  ) => {
+    event.preventDefault();
 
-    const form = event.currentTarget
-    const formData = new FormData(form)
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const payload = {
       source,
-      name: String(formData.get('name') ?? '').trim(),
-      phone: String(formData.get('phone') ?? '').trim(),
-      service: String(formData.get('service') ?? '').trim(),
-      comment: String(formData.get('comment') ?? '').trim(),
-      consent: formData.get('consent') === 'on',
-    }
+      name: String(formData.get("name") ?? "").trim(),
+      phone: String(formData.get("phone") ?? "").trim(),
+      service: String(formData.get("service") ?? "").trim(),
+      comment: String(formData.get("comment") ?? "").trim(),
+      consent: formData.get("consent") === "on",
+    };
 
-    if (source === 'main') {
-      setLeadFormStatus({ type: 'loading', message: 'Отправляем заявку...' })
+    if (source === "main") {
+      setLeadFormStatus({ type: "loading", message: "Отправляем заявку..." });
     } else {
-      setCallFormStatus({ type: 'loading', message: 'Отправляем заявку...' })
+      setCallFormStatus({ type: "loading", message: "Отправляем заявку..." });
     }
 
     if (!web3FormsAccessKey) {
       const configError =
-        'Форма временно недоступна: не настроена NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY.'
-      if (source === 'main') {
-        setLeadFormStatus({ type: 'error', message: configError })
+        "Форма временно недоступна: не настроена NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY.";
+      if (source === "main") {
+        setLeadFormStatus({ type: "error", message: configError });
       } else {
-        setCallFormStatus({ type: 'error', message: configError })
+        setCallFormStatus({ type: "error", message: configError });
       }
-      return
+      return;
     }
 
     const sourceLabel =
-      source === 'modal' ? 'Модальное окно «Заказать звонок»' : 'Основная форма «Оставить заявку»'
+      source === "modal"
+        ? "Модальное окно «Заказать звонок»"
+        : "Основная форма «Оставить заявку»";
     try {
-      const submittedAt = new Intl.DateTimeFormat('ru-RU', {
-        dateStyle: 'full',
-        timeStyle: 'short',
-        timeZone: 'Europe/Moscow',
-      }).format(new Date())
+      const submittedAt = new Intl.DateTimeFormat("ru-RU", {
+        dateStyle: "full",
+        timeStyle: "short",
+        timeZone: "Europe/Moscow",
+      }).format(new Date());
 
       const web3FormsPayload: Record<string, string> = {
         access_key: web3FormsAccessKey,
         subject: `🟢 Новая заявка ARTIS`,
-        from_name: 'ARTIS | Заявка с сайта',
-        'Имя клиента': payload.name,
+        from_name: "ARTIS | Заявка с сайта",
+        "Имя клиента": payload.name,
         Телефон: payload.phone,
-      }
-      if (payload.comment) web3FormsPayload.Комментарий = payload.comment
-      if (payload.service) web3FormsPayload.Услуга = payload.service
-      web3FormsPayload.Источник = sourceLabel
-      web3FormsPayload['Дата отправки'] = submittedAt
-      web3FormsPayload['Сайт компании'] = siteUrl || 'Не указан'
-      web3FormsPayload.botcheck = ''
+      };
+      if (payload.comment) web3FormsPayload.Комментарий = payload.comment;
+      if (payload.service) web3FormsPayload.Услуга = payload.service;
+      web3FormsPayload.Источник = sourceLabel;
+      web3FormsPayload["Дата отправки"] = submittedAt;
+      web3FormsPayload["Сайт компании"] = siteUrl || "Не указан";
+      web3FormsPayload.botcheck = "";
 
       const response = await fetch(web3FormsApiEndpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(web3FormsPayload),
-      })
-      const responseText = await response.text()
-      let responsePayload: { message?: string; success?: boolean } = {}
+      });
+      const responseText = await response.text();
+      let responsePayload: { message?: string; success?: boolean } = {};
       try {
-        responsePayload = JSON.parse(responseText) as { message?: string; success?: boolean }
+        responsePayload = JSON.parse(responseText) as {
+          message?: string;
+          success?: boolean;
+        };
       } catch {
-        responsePayload = {}
+        responsePayload = {};
       }
 
       if (!response.ok || !responsePayload.success) {
         const apiErrorMessage =
-          responsePayload.message ?? 'Не удалось отправить заявку через Web3Forms.'
+          responsePayload.message ??
+          "Не удалось отправить заявку через Web3Forms.";
 
         if (isSubmissionLimitError(response.status, apiErrorMessage)) {
-          throw new Error(submissionLimitMessage)
+          throw new Error(submissionLimitMessage);
         }
 
-        throw new Error(apiErrorMessage)
+        throw new Error(apiErrorMessage);
       }
 
-      const successMessage = 'Заявка отправлена. Мы скоро свяжемся с вами.'
-      trackYandexGoal('form_submit', {
-        source: source === 'main' ? 'main_form' : 'callback_modal',
-      })
-      if (source === 'main') {
-        setLeadFormStatus({ type: 'success', message: successMessage })
+      const successMessage = "Заявка отправлена. Мы скоро свяжемся с вами.";
+      trackYandexGoal("form_submit", {
+        source: source === "main" ? "main_form" : "callback_modal",
+      });
+      if (source === "main") {
+        setLeadFormStatus({ type: "success", message: successMessage });
       } else {
-        setCallFormStatus({ type: 'success', message: successMessage })
-        setCallFormService('')
-        setTimeout(() => setIsCallModalOpen(false), 900)
+        setCallFormStatus({ type: "success", message: successMessage });
+        setCallFormService("");
+        setTimeout(() => setIsCallModalOpen(false), 900);
       }
 
-      form.reset()
+      form.reset();
     } catch (error) {
       const failMessage =
-        error instanceof Error ? error.message : 'Ошибка отправки. Попробуйте еще раз.'
-      if (source === 'main') {
-        setLeadFormStatus({ type: 'error', message: failMessage })
+        error instanceof Error
+          ? error.message
+          : "Ошибка отправки. Попробуйте еще раз.";
+      if (source === "main") {
+        setLeadFormStatus({ type: "error", message: failMessage });
       } else {
-        setCallFormStatus({ type: 'error', message: failMessage })
+        setCallFormStatus({ type: "error", message: failMessage });
       }
     }
-  }
+  };
 
   return (
     <main className="min-h-screen">
@@ -493,15 +530,15 @@ export default function HomePage() {
         style={{
           backgroundImage:
             "linear-gradient(110deg, rgba(13,54,28,0.5), rgba(23,91,44,0.3)), url('/images/bg/mainSection2.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <header className="fixed inset-x-0 top-0 z-40">
           <div className="container-shell">
             <div
               className={`relative rounded-b-2xl bg-white/95 px-4 shadow-lg backdrop-blur transition-all duration-300 sm:px-6 ${
-                isNavbarCompact ? 'py-2' : 'py-3'
+                isNavbarCompact ? "py-2" : "py-3"
               }`}
             >
               <div className="flex items-center justify-between gap-2 md:hidden">
@@ -519,28 +556,40 @@ export default function HomePage() {
                 <a
                   className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary/15 bg-white px-2 py-2 text-[11px] font-medium leading-none text-foreground shadow-sm"
                   href={`tel:${phoneNumber}`}
-                  onClick={() => handlePhoneClick('header_mobile')}
+                  onClick={() => handlePhoneClick("header_mobile")}
                 >
                   <Phone className="h-3.5 w-3.5 shrink-0 text-primary" />
-                  <span className="truncate whitespace-nowrap">{fallbackPhoneDisplay}</span>
+                  <span className="truncate whitespace-nowrap">
+                    {fallbackPhoneDisplay}
+                  </span>
                 </a>
 
                 <button
                   aria-controls="mobile-navigation"
                   aria-expanded={isMobileMenuOpen}
-                  aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+                  aria-label={
+                    isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"
+                  }
                   className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-white text-primary"
                   onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                   type="button"
                 >
-                  {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  {isMobileMenuOpen ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <Menu className="h-5 w-5" />
+                  )}
                 </button>
               </div>
 
               <div className="hidden grid-cols-1 items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr]">
                 <div className="text-center md:text-left">
-                  <p className="text-base font-medium text-foreground">Укладка тротуарной плитки</p>
-                  <p className="text-sm text-muted-foreground">и благоустройство участков</p>
+                  <p className="text-base font-medium text-foreground">
+                    Укладка тротуарной плитки
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    и благоустройство участков
+                  </p>
                 </div>
 
                 <div className="hidden md:block" />
@@ -549,7 +598,7 @@ export default function HomePage() {
                   <a
                     className="inline-flex items-center gap-2 text-sm font-medium text-foreground"
                     href="tel:+79671652525"
-                    onClick={() => handlePhoneClick('header_desktop')}
+                    onClick={() => handlePhoneClick("header_desktop")}
                   >
                     <Phone className="h-4 w-4 text-primary" />
                     +7 (967) 165-25-25
@@ -562,7 +611,7 @@ export default function HomePage() {
                     <MessageCircleMore className="h-4 w-4" />
                   </a>
                   <button
-                    className={buttonVariants({ size: 'sm' })}
+                    className={buttonVariants({ size: "sm" })}
                     onClick={() => openCallModal()}
                     type="button"
                   >
@@ -574,12 +623,12 @@ export default function HomePage() {
               <div className="pointer-events-none absolute left-1/2 top-full hidden -translate-x-1/2 -translate-y-1/2 md:block">
                 <div
                   className={`flex items-center justify-center rounded-full border-4 border-white bg-white shadow-xl transition-all duration-300 ${
-                    isNavbarCompact ? 'h-24 w-24' : 'h-36 w-36'
+                    isNavbarCompact ? "h-24 w-24" : "h-36 w-36"
                   }`}
                 >
                   <Image
                     alt="Логотип ARTIS"
-                    className={`${isNavbarCompact ? 'h-12' : 'h-16'} w-auto transition-all duration-300`}
+                    className={`${isNavbarCompact ? "h-12" : "h-16"} w-auto transition-all duration-300`}
                     height={220}
                     priority
                     src="/images/logos/logo.png"
@@ -593,21 +642,27 @@ export default function HomePage() {
 
         <div
           className={`fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 md:hidden ${
-            isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+            isMobileMenuOpen
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
           }`}
           onClick={() => setIsMobileMenuOpen(false)}
         >
           <aside
             className={`absolute h-full overflow-y-auto inset-y-0 right-0 flex w-full max-w-[320px] flex-col border-l border-primary/10 bg-white px-5 pb-6 pt-5 shadow-2xl transition-transform duration-300 ${
-              isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+              isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
             }`}
             id="mobile-navigation"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-primary/10 pb-4">
               <div>
-                <p className="text-sm font-semibold text-foreground">Навигация</p>
-                <p className="text-xs text-muted-foreground">Разделы и быстрые действия</p>
+                <p className="text-sm font-semibold text-foreground">
+                  Навигация
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Разделы и быстрые действия
+                </p>
               </div>
               <button
                 aria-label="Закрыть меню"
@@ -639,7 +694,7 @@ export default function HomePage() {
               <a
                 className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-foreground"
                 href="tel:+79671652525"
-                onClick={() => handlePhoneClick('mobile_menu')}
+                onClick={() => handlePhoneClick("mobile_menu")}
               >
                 <Phone className="h-4 w-4 text-primary" />
                 +7 (967) 165-25-25
@@ -654,10 +709,10 @@ export default function HomePage() {
                 </a>
               </div>
               <button
-                className={`${buttonVariants({ size: 'sm' })} mt-4 w-full`}
+                className={`${buttonVariants({ size: "sm" })} mt-4 w-full`}
                 onClick={() => {
-                  openCallModal()
-                  setIsMobileMenuOpen(false)
+                  openCallModal();
+                  setIsMobileMenuOpen(false);
                 }}
                 type="button"
               >
@@ -701,34 +756,42 @@ export default function HomePage() {
                         <Clock3 className="h-4 w-4" />
                         Сроки
                       </p>
-                      <p className="mt-1 text-sm text-slate-700">Старт за 1-3 дня после замера</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        Старт за 1-3 дня после замера
+                      </p>
                     </div>
                     <div className="rounded-xl border border-primary/15 bg-primary/5 p-3">
                       <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
                         <MapPin className="h-4 w-4" />
                         География
                       </p>
-                      <p className="mt-1 text-sm text-slate-700">Москва и Московская область</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        Москва и Московская область
+                      </p>
                     </div>
                     <div className="rounded-xl border border-primary/15 bg-primary/5 p-3">
                       <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
                         <ShieldCheck className="h-4 w-4" />
                         Контроль
                       </p>
-                      <p className="mt-1 text-sm text-slate-700">Приемка по этапам и фотоотчет</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        Приемка по этапам и фотоотчет
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="flex w-full justify-center flex-wrap items-center gap-2 pb-1 text-sm text-slate-700 sm:gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" /> Бесплатный замер
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Бесплатный
+                  замер
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" /> Гарантия
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white sm:px-3 px-2 py-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" /> Фиксированная смета
+                  <CheckCircle2 className="h-4 w-4 text-primary" />{" "}
+                  Фиксированная смета
                 </span>
               </div>
             </div>
@@ -740,8 +803,14 @@ export default function HomePage() {
                   className="aspect-[9/16] w-full object-cover"
                   loop={false}
                   muted={isVideoMuted}
-                  onEnded={() => setActiveVideoIndex((prev) => (prev + 1) % heroVideos.length)}
-                  onLoadedMetadata={(event) => setVideoDuration(event.currentTarget.duration || 0)}
+                  onEnded={() =>
+                    setActiveVideoIndex(
+                      (prev) => (prev + 1) % heroVideos.length,
+                    )
+                  }
+                  onLoadedMetadata={(event) =>
+                    setVideoDuration(event.currentTarget.duration || 0)
+                  }
                   onPause={() => setIsVideoPaused(true)}
                   onPlay={() => setIsVideoPaused(false)}
                   onTimeUpdate={(event) =>
@@ -757,7 +826,11 @@ export default function HomePage() {
                     onClick={toggleVideoPlayback}
                     type="button"
                   >
-                    {isVideoPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                    {isVideoPaused ? (
+                      <Play className="h-4 w-4" />
+                    ) : (
+                      <Pause className="h-4 w-4" />
+                    )}
                   </button>
                   <button
                     className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/30 bg-black/45 text-white backdrop-blur hover:bg-black/60"
@@ -785,7 +858,7 @@ export default function HomePage() {
                   {heroVideos.map((_, index) => (
                     <button
                       aria-label={`Видео ${index + 1}`}
-                      className={`h-2.5 w-2.5 rounded-full transition ${activeVideoIndex === index ? 'bg-primary' : 'bg-white/45 hover:bg-white/70'}`}
+                      className={`h-2.5 w-2.5 rounded-full transition ${activeVideoIndex === index ? "bg-primary" : "bg-white/45 hover:bg-white/70"}`}
                       key={`hero-video-${index + 1}`}
                       onClick={() => setActiveVideoIndex(index)}
                       type="button"
@@ -805,7 +878,10 @@ export default function HomePage() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {pricingItems.map((item) => (
-            <article className="overflow-hidden rounded-xl border bg-card" key={item.service}>
+            <article
+              className="overflow-hidden rounded-xl border bg-card"
+              key={item.service}
+            >
               <div className="relative">
                 <div
                   className="h-44 w-full bg-cover bg-center sm:h-52"
@@ -824,7 +900,9 @@ export default function HomePage() {
               </div>
               <div className="p-4">
                 <p className="text-sm text-muted-foreground">{item.service}</p>
-                <p className="mt-3 text-lg font-semibold text-primary">{item.price}</p>
+                <p className="mt-3 text-lg font-semibold text-primary">
+                  {item.price}
+                </p>
               </div>
             </article>
           ))}
@@ -840,15 +918,24 @@ export default function HomePage() {
           <div className="space-y-2 px-4 py-4 text-sm text-foreground">
             <p>
               Вибропрессованная брусчатка нашего производства:
-              <span className="font-semibold text-primary"> от 800 до 1 150 руб/м2</span> (в
-              зависимости от формата и толщины).
+              <span className="font-semibold text-primary">
+                {" "}
+                от 800 до 1 150 руб/м2
+              </span>{" "}
+              (в зависимости от формата и толщины).
             </p>
             <p>
               Российская брусчатка других производителей:
-              <span className="font-semibold text-primary"> от 1 600 до 3 000 руб/м2</span>.
-              Импортный клинкер:
-              <span className="font-semibold text-primary"> около 100 евро/м2</span> с учетом
-              доставки.
+              <span className="font-semibold text-primary">
+                {" "}
+                от 1 300 до 3 000 руб/м2
+              </span>
+              . Импортный клинкер:
+              <span className="font-semibold text-primary">
+                {" "}
+                около 100 евро/м2
+              </span>{" "}
+              с учетом доставки.
             </p>
           </div>
         </div>
@@ -856,15 +943,17 @@ export default function HomePage() {
 
       <section className="py-10" id="works">
         <div className="container-shell mb-4">
-          <h2 className="text-3xl font-semibold tracking-tight">Примеры работ</h2>
+          <h2 className="text-3xl font-semibold tracking-tight">
+            Примеры работ
+          </h2>
         </div>
         <div className="container-shell">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              '/images/works/23.jpg',
-              '/images/works/20.jpg',
-              '/images/works/26.jpg',
-              '/images/works/4.jpg',
+              "/images/works/23.jpg",
+              "/images/works/20.jpg",
+              "/images/works/26.jpg",
+              "/images/works/4.jpg",
             ].map((imageSrc, index) => (
               <button
                 className="block w-full overflow-hidden rounded-lg border bg-card text-left"
@@ -884,7 +973,7 @@ export default function HomePage() {
           </div>
           <div className="mt-6 flex justify-center">
             <Link
-              className={`${buttonVariants({ variant: 'secondary', size: 'lg' })} group gap-2`}
+              className={`${buttonVariants({ variant: "secondary", size: "lg" })} group gap-2`}
               href="/portfolio"
             >
               Смотреть все работы
@@ -896,7 +985,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden py-16 sm:py-20" id="advantages">
+      <section
+        className="relative overflow-hidden py-16 sm:py-20"
+        id="advantages"
+      >
         <div className="pointer-events-none absolute inset-0">
           <div className="why-float absolute -left-10 top-8 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
           <div className="why-float absolute right-4 top-1/3 h-52 w-52 rounded-full bg-emerald-300/20 blur-3xl [animation-delay:1.2s]" />
@@ -913,8 +1005,9 @@ export default function HomePage() {
                 Почему нас выбирают
               </h2>
               <p className="mt-3 max-w-2xl text-muted-foreground">
-                Работаем не «как получится», а по технологической карте: основание, геометрия,
-                водоотвод и аккуратная сдача объекта с фиксацией каждого этапа.
+                Работаем не «как получится», а по технологической карте:
+                основание, геометрия, водоотвод и аккуратная сдача объекта с
+                фиксацией каждого этапа.
               </p>
             </div>
 
@@ -922,7 +1015,9 @@ export default function HomePage() {
               <p className="text-xs font-semibold uppercase tracking-wider text-primary/80">
                 Результат для клиента
               </p>
-              <p className="mt-1 text-2xl font-semibold text-primary">Ровно, надежно, в срок</p>
+              <p className="mt-1 text-2xl font-semibold text-primary">
+                Ровно, надежно, в срок
+              </p>
             </div>
           </div>
 
@@ -933,7 +1028,9 @@ export default function HomePage() {
                 key={item.label}
                 style={{ animationDelay: `${index * 120}ms` }}
               >
-                <p className="text-2xl font-semibold leading-none text-primary">{item.value}</p>
+                <p className="text-2xl font-semibold leading-none text-primary">
+                  {item.value}
+                </p>
                 <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
                   {item.label}
                 </p>
@@ -960,7 +1057,8 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Контроль на каждом этапе, фото-отчеты и аккуратная сдача объекта.
+                    Контроль на каждом этапе, фото-отчеты и аккуратная сдача
+                    объекта.
                   </p>
                 </CardContent>
               </Card>
@@ -975,8 +1073,8 @@ export default function HomePage() {
         style={{
           backgroundImage:
             "linear-gradient(180deg, rgba(235,246,237,0.95), rgba(230,243,233,0.95)), url('https://source.unsplash.com/1400x900/?paving,walkway')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="container-shell py-16 sm:py-20">
@@ -986,10 +1084,12 @@ export default function HomePage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
                   Этапы работ
                 </p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight">Как проходит работа</h2>
+                <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+                  Как проходит работа
+                </h2>
                 <p className="mt-3 max-w-md text-sm text-muted-foreground">
-                  Прозрачный процесс от первого звонка до финальной сдачи объекта. Ниже можно
-                  разместить фото вашего процесса работ.
+                  Прозрачный процесс от первого звонка до финальной сдачи
+                  объекта. Ниже можно разместить фото вашего процесса работ.
                 </p>
                 <div className="mt-6 overflow-hidden rounded-xl border border-primary/25 bg-white/55">
                   <Image
@@ -1004,7 +1104,7 @@ export default function HomePage() {
 
               <div className="grid gap-3">
                 {steps.map((step, index) => {
-                  const Icon = stepIcons[index % stepIcons.length]
+                  const Icon = stepIcons[index % stepIcons.length];
 
                   return (
                     <div
@@ -1020,11 +1120,13 @@ export default function HomePage() {
                           <p className="text-xs font-semibold uppercase tracking-wider text-primary/85">
                             Шаг {index + 1}
                           </p>
-                          <p className="mt-1 text-sm leading-relaxed text-foreground/90">{step}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-foreground/90">
+                            {step}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -1038,8 +1140,8 @@ export default function HomePage() {
         style={{
           backgroundImage:
             "linear-gradient(180deg, rgba(245, 248, 243, 0.9), rgba(245, 248, 243, 0.9)), url('/images/bg/bgUnderFormContact.webp')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="container-shell py-12 sm:py-16">
@@ -1060,13 +1162,14 @@ export default function HomePage() {
                   Оставьте заявку и узнайте точную цену на вашу услугу
                 </h2>
                 <p className="mt-4 text-muted-foreground">
-                  Мы перезвоним в течение 1 часа и согласуем удобное время для консультации.
+                  Мы перезвоним в течение 1 часа и согласуем удобное время для
+                  консультации.
                 </p>
 
                 <form
-                  aria-busy={leadFormStatus.type === 'loading'}
+                  aria-busy={leadFormStatus.type === "loading"}
                   className="mt-6 grid w-full min-w-0 max-w-full gap-3"
-                  onSubmit={(event) => submitLead(event, 'main')}
+                  onSubmit={(event) => submitLead(event, "main")}
                 >
                   <input
                     autoComplete="off"
@@ -1095,9 +1198,14 @@ export default function HomePage() {
                     placeholder="Кратко опишите задачу (необязательно)"
                   />
                   <label className="flex w-full min-w-0 max-w-full items-start gap-2 text-xs leading-5 text-muted-foreground">
-                    <input className="mt-0.5 shrink-0" name="consent" required type="checkbox" />
+                    <input
+                      className="mt-0.5 shrink-0"
+                      name="consent"
+                      required
+                      type="checkbox"
+                    />
                     <span className="block w-full min-w-0 break-words">
-                      Согласен на{' '}
+                      Согласен на{" "}
                       <Link className="underline" href="/privacy-policy">
                         обработку персональных данных
                       </Link>
@@ -1106,16 +1214,16 @@ export default function HomePage() {
                   </label>
                   <Button
                     className="mt-2 h-12 w-full max-w-full md:text-base text-sm"
-                    disabled={leadFormStatus.type === 'loading'}
+                    disabled={leadFormStatus.type === "loading"}
                     type="submit"
                   >
-                    {leadFormStatus.type === 'loading' ? (
+                    {leadFormStatus.type === "loading" ? (
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Отправляем заявку...
                       </span>
                     ) : (
-                      'Получить бесплатную консультацию'
+                      "Получить бесплатную консультацию"
                     )}
                   </Button>
                   <FormStatusBanner status={leadFormStatus} />
@@ -1133,10 +1241,13 @@ export default function HomePage() {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">
                 FAQ
               </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight">Частые вопросы</h2>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+                Частые вопросы
+              </h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                Собрали ответы на вопросы, которые чаще всего задают перед стартом работ. Если не
-                нашли нужное, оставьте заявку и мы проконсультируем.
+                Собрали ответы на вопросы, которые чаще всего задают перед
+                стартом работ. Если не нашли нужное, оставьте заявку и мы
+                проконсультируем.
               </p>
               <div className="mt-5 grid gap-2 text-sm">
                 <p className="inline-flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-emerald-800">
@@ -1197,12 +1308,15 @@ export default function HomePage() {
                 <a
                   className="inline-flex items-center gap-2 font-semibold"
                   href="tel:+79671652525"
-                  onClick={() => handlePhoneClick('footer')}
+                  onClick={() => handlePhoneClick("footer")}
                 >
                   <Phone className="h-4 w-4 text-primary" />
                   +7 (967) 165-25-25
-                </a>{' '}
-                <a className="inline-flex items-center gap-2" href="mailto:artis-plitka@yandex.ru">
+                </a>{" "}
+                <a
+                  className="inline-flex items-center gap-2"
+                  href="mailto:artis-plitka@yandex.ru"
+                >
                   <MessageCircleMore className="h-4 w-4 text-primary" />
                   artis-plitka@yandex.ru
                 </a>
@@ -1222,7 +1336,7 @@ export default function HomePage() {
                 <MessageCircleMore className="h-5 w-5" />
               </a>
               <button
-                className={buttonVariants({ size: 'sm' })}
+                className={buttonVariants({ size: "sm" })}
                 onClick={() => openCallModal()}
                 type="button"
               >
@@ -1234,7 +1348,11 @@ export default function HomePage() {
           <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-sm text-muted-foreground">
             <Link href="/privacy-policy">Политика конфиденциальности</Link>
             <div className="flex items-center gap-3">
-              <a href={yandexMetrikaStatUrl} rel="nofollow noopener noreferrer" target="_blank">
+              <a
+                href={yandexMetrikaStatUrl}
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+              >
                 {/* Yandex provides the informer as a dynamic external image. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -1248,7 +1366,7 @@ export default function HomePage() {
                   width="88"
                 />
               </a>
-              <p>© 2025, ARTIS</p>
+              <p>© 2026, ARTIS</p>
             </div>
           </div>
         </div>
@@ -1290,9 +1408,9 @@ export default function HomePage() {
             </p>
 
             <form
-              aria-busy={callFormStatus.type === 'loading'}
+              aria-busy={callFormStatus.type === "loading"}
               className="grid w-full min-w-0 grid-cols-1 gap-3 [&>*]:max-w-full [&>*]:min-w-0 [&>*]:w-full"
-              onSubmit={(event) => submitLead(event, 'modal')}
+              onSubmit={(event) => submitLead(event, "modal")}
             >
               <input
                 autoComplete="off"
@@ -1318,16 +1436,23 @@ export default function HomePage() {
               <input
                 className="block h-11 w-full min-w-0 max-w-full box-border rounded-md border bg-background px-3 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                 name="service"
-                onChange={(event) => setCallFormService(event.currentTarget.value)}
+                onChange={(event) =>
+                  setCallFormService(event.currentTarget.value)
+                }
                 placeholder="Интересующая услуга (необязательно)"
                 type="text"
                 value={callFormService}
               />
               <label className="block w-full text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
-                  <input className="shrink-0" name="consent" required type="checkbox" />
+                  <input
+                    className="shrink-0"
+                    name="consent"
+                    required
+                    type="checkbox"
+                  />
                   <span>
-                    Даю согласие на{' '}
+                    Даю согласие на{" "}
                     <Link className="underline" href="/privacy-policy">
                       обработку персональных данных
                     </Link>
@@ -1335,14 +1460,18 @@ export default function HomePage() {
                   </span>
                 </span>
               </label>
-              <Button className="h-11" disabled={callFormStatus.type === 'loading'} type="submit">
-                {callFormStatus.type === 'loading' ? (
+              <Button
+                className="h-11"
+                disabled={callFormStatus.type === "loading"}
+                type="submit"
+              >
+                {callFormStatus.type === "loading" ? (
                   <span className="inline-flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Отправляем...
                   </span>
                 ) : (
-                  'Отправить'
+                  "Отправить"
                 )}
               </Button>
               <FormStatusBanner status={callFormStatus} />
@@ -1406,13 +1535,17 @@ export default function HomePage() {
               width={1200}
             />
             <div className="space-y-2 p-5">
-              <p className="text-sm text-muted-foreground">{selectedPricingItem.service}</p>
-              <p className="text-xl font-semibold text-primary">{selectedPricingItem.price}</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedPricingItem.service}
+              </p>
+              <p className="text-xl font-semibold text-primary">
+                {selectedPricingItem.price}
+              </p>
               <Button
                 className="mt-2"
                 onClick={() => {
-                  openCallModal(selectedPricingItem.service)
-                  setSelectedPricingItem(null)
+                  openCallModal(selectedPricingItem.service);
+                  setSelectedPricingItem(null);
                 }}
                 type="button"
               >
@@ -1423,5 +1556,5 @@ export default function HomePage() {
         </div>
       ) : null}
     </main>
-  )
+  );
 }
